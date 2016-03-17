@@ -8,17 +8,19 @@
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 </head>
 <body>
-    <p>Select a test:</p>
-    <select id="testSelect"></select>
-
-    <br><br>
-    <p>Source files touched by selected test:</p>
-    <div id="sourceFilesTable">
-        <table>
-            <tbody id="sourceFilesTableBody">
-            </tbody>
-        </table>
+    <div id="mainContent" style="width:80%; margin: 0 auto;">
+        <p>Select a test:</p>
+        <select id="testSelect"></select>
+        <br><br>
+        <p>Source files touched by selected test:</p>
+        <div id="sourceFilesTable">
+            <table>
+                <tbody id="sourceFilesTableBody">
+                </tbody>
+            </table>
+        </div>
     </div>
+    
     <script type="application/javascript">
 
         var search = function*(query){
