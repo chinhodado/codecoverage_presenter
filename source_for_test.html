@@ -9,9 +9,14 @@
 </head>
 <body>
     <div id="mainContent" style="width:80%; margin: 0 auto;">
+        <p>Select a query:</p>
+        <select id="querySelect"></select>
+        <br><br>
+
         <p>Select a test:</p>
         <select id="testSelect"></select>
         <br><br>
+
         <p>Source files touched by selected test:</p>
         <div id="sourceFilesTable">
             <table>
@@ -20,7 +25,7 @@
             </table>
         </div>
     </div>
-    
+
     <script type="application/javascript">
 
         var search = function*(query){
@@ -31,37 +36,58 @@
             yield (output);
         };
 
-        importScript(['modevlib/main.js'], function(){
-            Thread.run(function*(){
-                var tests = yield (search({
-                    "limit": 10000,
-                    "groupby": ["test.url"],
-                    "from": "coverage"
-                }));
-
-                tests.data.forEach(function(element, index, array) {
-                    $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
-                });
-            });
-        });
-
-        $("#testSelect").on('change', function (e) {
-            $("#sourceFilesTableBody").html("");
-            var valueSelected = this.value;
+        function query1() {
             importScript(['modevlib/main.js'], function(){
                 Thread.run(function*(){
-                    var sourceFiles = yield (search({
+                    var tests = yield (search({
                         "limit": 10000,
-                        "where": {"eq":{"test.url": valueSelected}},
-                        "groupby": ["source.file"],
+                        "groupby": ["test.url"],
                         "from": "coverage"
                     }));
 
-                    sourceFiles.data.forEach(function(element, index, array) {
-                        $("#sourceFilesTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+                    tests.data.forEach(function(element, index, array) {
+                        $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
                     });
                 });
             });
+
+            $("#testSelect").on('change', function (e) {
+                $("#sourceFilesTableBody").html("");
+                var valueSelected = this.value;
+                importScript(['modevlib/main.js'], function(){
+                    Thread.run(function*(){
+                        var sourceFiles = yield (search({
+                            "limit": 10000,
+                            "where": {"eq":{"test.url": valueSelected}},
+                            "groupby": ["source.file"],
+                            "from": "coverage"
+                        }));
+
+                        sourceFiles.data.forEach(function(element, index, array) {
+                            $("#sourceFilesTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+                        });
+                    });
+                });
+            });
+        }
+
+        // populate the query select
+        var queryList = {
+            0: "",
+            1: "Given a test, which methods and files do we touch?",
+            2: "Given a source file and related method, which tests access this and which lines have no coverage.",
+            3: "Given a patch (list of source files and methods adjusted) recommend which tests I should run."
+        };
+
+        for (var key in queryList) {
+            if (!queryList.hasOwnProperty(key)) continue;
+            $("#querySelect").append("<option value='" + key + "'>" + queryList[key] + "</option>");
+        }
+
+        $("#querySelect").on('change', function (e) {
+            if (this.value == "1") {
+                query1();
+            }
         });
 
 </script>
