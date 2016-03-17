@@ -45,6 +45,7 @@
                         "from": "coverage"
                     }));
 
+                    $("#testSelect").append("<option value=''></option>")
                     tests.data.forEach(function(element, index, array) {
                         $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
                     });
@@ -54,6 +55,7 @@
             $("#testSelect").on('change', function (e) {
                 $("#sourceFilesTableBody").html("");
                 var valueSelected = this.value;
+                if (valueSelected === '') return;
                 importScript(['modevlib/main.js'], function(){
                     Thread.run(function*(){
                         var sourceFiles = yield (search({
