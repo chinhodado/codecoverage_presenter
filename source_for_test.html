@@ -3,44 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="lib/jquery.js"></script>
     <script type="text/javascript" src="modevlib/imports/import.js"></script>
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 </head>
 <body>
-<p>Select a test:</p>
-<select id="testSelect"></select>
-<div id="tests">
-    <table>
-        <tbody id="tablebody">
-        </tbody>
-    </table>
-</div>
-<script type="application/javascript">
+    <p>Select a test:</p>
+    <select id="testSelect"></select>
 
-    importScript([
-        'modevlib/main.js'
-    ], function(){
-        Thread.run(function*(){
-            var tests = yield (search({
-                "limit": 10000,
-                "groupby": ["test.url"],
-                "from": "coverage"
+    <br><br>
+    <p>Source files touched by selected test:</p>
+    <div id="sourceFilesTable">
+        <table>
+            <tbody id="sourceFilesTableBody">
+            </tbody>
+        </table>
+    </div>
+    <script type="application/javascript">
+
+        var search = function*(query){
+            var output = yield (Rest.post({
+                url: "https://activedata.allizom.org/query",
+                json: query
             }));
+            yield (output);
+        };
 
-            console.log(tests);
-            tests.data.forEach(function(element, index, array) {
-                $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
+        importScript(['modevlib/main.js'], function(){
+            Thread.run(function*(){
+                var tests = yield (search({
+                    "limit": 10000,
+                    "groupby": ["test.url"],
+                    "from": "coverage"
+                }));
+
+                tests.data.forEach(function(element, index, array) {
+                    $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
+                });
             });
         });
-    });
 
-    var search = function*(query){
-        var output = yield (Rest.post({
-            url: "https://activedata.allizom.org/query",
-            json: query
-        }));
-        yield (output);
-    };
+        $("#testSelect").on('change', function (e) {
+            $("#sourceFilesTableBody").html("");
+            var valueSelected = this.value;
+            importScript(['modevlib/main.js'], function(){
+                Thread.run(function*(){
+                    var sourceFiles = yield (search({
+                        "limit": 10000,
+                        "where": {"eq":{"test.url": valueSelected}},
+                        "groupby": ["source.file"],
+                        "from": "coverage"
+                    }));
+
+                    sourceFiles.data.forEach(function(element, index, array) {
+                        $("#sourceFilesTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+                    });
+                });
+            });
+        });
 
 </script>
 </body>
