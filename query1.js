@@ -14,6 +14,9 @@ function query1() {
                     "from": "coverage"
                 }));
 
+                sourceFiles.data.sort(function(a, b) {
+                    return a[0].localeCompare(b[0]);
+                });
                 sourceFiles.data.forEach(function(element, index, array) {
                     $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
                 });
