@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <title>ActiveData Code Coverage Query Tool</title>
     <script src="lib/jquery.js"></script>
-    <script type="text/javascript" src="modevlib/imports/import.js"></script>
+    <script src="modevlib/imports/import.js"></script>
+    <script src="common.js"></script>
+    <script src="query1.js"></script>
+    <script src="query3.js"></script>
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 </head>
 <body>
@@ -14,14 +17,14 @@
         <select id="querySelect"></select>
         <br><br>
 
-        <p>Select a test:</p>
-        <select id="testSelect"></select>
+        <p id="selectLabel2">Select a test:</p>
+        <select id="select2"></select>
         <br><br>
 
-        <p>Source files touched by selected test:</p>
-        <div id="sourceFilesTable">
+        <p id="resultDesc"></p>
+        <div id="resultTable">
             <table>
-                <tbody id="sourceFilesTableBody">
+                <tbody id="resultTableBody">
                 </tbody>
             </table>
         </div>
@@ -37,49 +40,13 @@
             yield (output);
         };
 
-        function query1() {
-            importScript(['modevlib/main.js'], function(){
-                Thread.run(function*(){
-                    var tests = yield (search({
-                        "limit": 10000,
-                        "groupby": ["test.url"],
-                        "from": "coverage"
-                    }));
-
-                    $("#testSelect").append("<option value=''></option>")
-                    tests.data.forEach(function(element, index, array) {
-                        $("#testSelect").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
-                    });
-                });
-            });
-
-            $("#testSelect").on('change', function (e) {
-                $("#sourceFilesTableBody").html("");
-                var valueSelected = this.value;
-                if (valueSelected === '') return;
-                importScript(['modevlib/main.js'], function(){
-                    Thread.run(function*(){
-                        var sourceFiles = yield (search({
-                            "limit": 10000,
-                            "where": {"eq":{"test.url": valueSelected}},
-                            "groupby": ["source.file"],
-                            "from": "coverage"
-                        }));
-
-                        sourceFiles.data.forEach(function(element, index, array) {
-                            $("#sourceFilesTableBody").append("<tr><td>" + element[0] + "</td></tr>")
-                        });
-                    });
-                });
-            });
-        }
-
         // populate the query select
         var queryList = {
             0: "",
-            1: "Given a test, which methods and files do we touch?",
-            2: "Given a source file and related method, which tests access this and which lines have no coverage.",
-            3: "Given a patch (list of source files and methods adjusted) recommend which tests I should run."
+            1: "Given a test, which files does it touch?",
+            2: "Given a test, which unique files does it touch?",
+            3: "Given a source file, which tests touch it?",
+            4: "Given a patch (list of source files and methods adjusted) recommend which tests I should run."
         };
 
         for (var key in queryList) {
@@ -95,6 +62,9 @@
                 alert("Not implemented yet!");
             }
             else if (this.value == "3") {
+                query3();
+            }
+            else if (this.value == "4") {
                 alert("Not implemented yet!");
             }
         });
