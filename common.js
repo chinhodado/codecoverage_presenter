@@ -11,6 +11,10 @@ function addTests() {
             $("#resultDesc").text("Source files touched by selected test:");
             $("#select2").empty();
             $("#select2").append("<option value=''></option>");
+
+            tests.data.sort(function(a, b) {
+                return a[0].localeCompare(b[0]);
+            });
             tests.data.forEach(function(element, index, array) {
                 $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
             });
@@ -31,6 +35,10 @@ function addSources() {
             $("#resultDesc").text("Tests that touch the selected source file:");
             $("#select2").empty();
             $("#select2").append("<option value=''></option>");
+
+            sources.data.sort(function(a, b) {
+                return a[0].localeCompare(b[0]);
+            });
             sources.data.forEach(function(element, index, array) {
                 $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
             });
