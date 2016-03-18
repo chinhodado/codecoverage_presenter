@@ -17,16 +17,18 @@
         <select id="querySelect"></select>
         <br><br>
 
-        <p id="selectLabel2">Select a test:</p>
-        <select id="select2"></select>
-        <br><br>
+        <div id="step2" style="display: none">
+            <p id="selectLabel2">Select a test:</p>
+            <select id="select2"></select>
+            <br><br>
 
-        <p id="resultDesc"></p>
-        <div id="resultTable">
-            <table>
-                <tbody id="resultTableBody">
-                </tbody>
-            </table>
+            <p id="resultDesc"></p>
+            <div id="resultTable">
+                <table>
+                    <tbody id="resultTableBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -55,17 +57,23 @@
         }
 
         $("#querySelect").on('change', function (e) {
-            if (this.value == "1") {
-                query1();
+            if (this.value == "0") {
+                $("#step2").hide();
             }
-            else if (this.value == "2") {
-                alert("Not implemented yet!");
-            }
-            else if (this.value == "3") {
-                query3();
-            }
-            else if (this.value == "4") {
-                alert("Not implemented yet!");
+            else {
+                $("#step2").show();
+                if (this.value == "1") {
+                    query1();
+                }
+                else if (this.value == "2") {
+                    alert("Not implemented yet!");
+                }
+                else if (this.value == "3") {
+                    query3();
+                }
+                else if (this.value == "4") {
+                    alert("Not implemented yet!");
+                }
             }
         });
 
