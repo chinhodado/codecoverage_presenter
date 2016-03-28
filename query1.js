@@ -1,3 +1,6 @@
+/**
+ * Given a test, which files does it touch?
+ */
 function query1() {
     addTests();
 
@@ -5,14 +8,23 @@ function query1() {
         $("#resultTableBody").html("");
         var valueSelected = this.value;
         if (valueSelected === '') return;
+        var build = $("#selectBuild").val();
+
+        var query = {
+            "limit": 10000,
+            "where": {
+                "eq":{
+                    "test.url": valueSelected,
+                    "build.revision": build
+                }
+            },
+            "groupby": ["source.file"],
+            "from": "coverage"
+        };
+
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
-                var sourceFiles = yield (search({
-                    "limit": 10000,
-                    "where": {"eq":{"test.url": valueSelected}},
-                    "groupby": ["source.file"],
-                    "from": "coverage"
-                }));
+                var sourceFiles = yield (search(query));
 
                 sourceFiles.data.sort(function(a, b) {
                     return a[0].localeCompare(b[0]);

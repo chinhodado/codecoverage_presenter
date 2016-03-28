@@ -1,3 +1,6 @@
+/**
+ * Given a test, which unique files does it touch?
+ */
 function query2() {
     addTests();
 
@@ -5,12 +8,19 @@ function query2() {
         $("#resultTableBody").html("");
         var valueSelected = this.value;
         if (valueSelected === '') return;
+        var build = $("#selectBuild").val();
+
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
                 // get source files covered by test
                 var sources = yield (search({
                     "from": "coverage",
-                    "where": {"eq": {"test.url": valueSelected}},
+                    "where": {
+                        "eq": {
+                            "test.url": valueSelected,
+                            "build.revision": build
+                        }
+                    },
                     "groupby": [
                         {"name": "source", "value": "source.file"}
                     ],
@@ -23,7 +33,12 @@ function query2() {
                     // find test that cover the same
                     "from": "coverage",
                     "select": {"name": "tests", "value": "test.url", "aggregate": "union"},
-                    "where": {"in": {"source.file": sources.data.select("source")}},
+                    "where": {
+                        "in": {
+                            "source.file": sources.data.select("source")
+                        }
+                        // TODO: do we need to specify build revision here?
+                    },
                     "groupby": [
                         {"name": "source", "value": "source.file"}
                     ],

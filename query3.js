@@ -1,3 +1,6 @@
+/**
+ * Given a source file, which tests touch it?
+ */
 function query3() {
     addSources();
 
@@ -5,11 +8,18 @@ function query3() {
         $("#resultTableBody").html("");
         var valueSelected = this.value;
         if (valueSelected === '') return;
+        var build = $("#selectBuild").val();
+
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
                 var testFiles = yield (search({
                     "limit": 10000,
-                    "where": {"eq":{"source.file": valueSelected}},
+                    "where": {
+                        "eq":{
+                            "source.file": valueSelected,
+                            "build.revision": build
+                        }
+                    },
                     "groupby": ["test.url"],
                     "from": "coverage"
                 }));
