@@ -55,7 +55,9 @@ function query2() {
                     v.tests.remove(valueSelected);
                 });
 
+                showPermalink();
                 $("#resultDesc").text("Unique source files touched by selected test:");
+                
                 siblings.data.forEach(function(element, index, array) {
                     if (element.tests.length > 0) return;
                     $("#resultTableBody").append("<tr><td>" + element.source + "</td></tr>")

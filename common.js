@@ -14,7 +14,7 @@ function addTests() {
             }));
 
             $("#selectLabel2").text("Select a test:");
-            $("#resultDesc").text("Source files touched by selected test:");
+            $("#resultDesc").text("");
             $("#select2").empty();
             $("#select2").append("<option value=''></option>");
 
@@ -44,7 +44,7 @@ function addSources() {
             }));
 
             $("#selectLabel2").text("Select a source file:");
-            $("#resultDesc").text("Tests that touch the selected source file:");
+            $("#resultDesc").text("");
             $("#select2").empty();
             $("#select2").append("<option value=''></option>");
 
@@ -85,4 +85,28 @@ function disableAll(isDisabled) {
     $("#selectBuildRevision").prop('disabled', isDisabled);
     $("#querySelect").prop('disabled', isDisabled);
     $("#select2").prop('disabled', isDisabled);
+}
+
+function showPermalink() {
+    var permalink = window.location.href + "?" + getUrlQueryString();
+    $("#permalink").text("Permalink: " + permalink);
+}
+
+function getUrlQueryString() {
+    var buildRevision = $("#selectBuildRevision").val();
+    var query = $("#querySelect").val();
+    var select2 = $("#select2").val();
+    var param = {
+        "buildRevision": buildRevision,
+        "query": query,
+        "select2": select2
+    };
+    return encodeQueryData(param);
+}
+
+function encodeQueryData(data) {
+    var ret = [];
+    for (var d in data)
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+    return ret.join("&");
 }

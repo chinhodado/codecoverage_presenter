@@ -34,6 +34,9 @@ function query3() {
                     $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
                 });
 
+                showPermalink();
+                $("#resultDesc").text("Tests that touch the selected source file:");
+
                 // re-enable the inputs
                 disableAll(false);
             });

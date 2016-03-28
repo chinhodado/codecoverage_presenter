@@ -36,6 +36,9 @@ function query1() {
                     $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
                 });
 
+                showPermalink();
+                $("#resultDesc").text("Source files touched by selected test:");
+
                 // re-enable the inputs
                 disableAll(false);
             });
