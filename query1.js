@@ -8,14 +8,14 @@ function query1() {
         $("#resultTableBody").html("");
         var valueSelected = this.value;
         if (valueSelected === '') return;
-        var build = $("#selectBuild").val();
+        var buildRevision = $("#selectBuildRevision").val();
 
         var query = {
             "limit": 10000,
             "where": {
                 "eq":{
                     "test.url": valueSelected,
-                    "build.revision": build
+                    "build.revision": buildRevision
                 }
             },
             "groupby": ["source.file"],

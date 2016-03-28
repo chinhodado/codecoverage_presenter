@@ -8,7 +8,7 @@ function query2() {
         $("#resultTableBody").html("");
         var valueSelected = this.value;
         if (valueSelected === '') return;
-        var build = $("#selectBuild").val();
+        var buildRevision = $("#selectBuildRevision").val();
 
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
@@ -21,7 +21,7 @@ function query2() {
                     "where": {
                         "eq": {
                             "test.url": valueSelected,
-                            "build.revision": build
+                            "build.revision": buildRevision
                         }
                     },
                     "groupby": [

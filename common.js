@@ -1,13 +1,13 @@
 function addTests() {
     importScript(['modevlib/main.js'], function(){
-        var build = $("#selectBuild").val();
+        var buildRevision = $("#selectBuildRevision").val();
         Thread.run(function*(){
             var tests = yield (search({
                 "limit": 10000,
                 "groupby": ["test.url"],
                 "where" : {
                     "eq":{
-                        "build.revision": build
+                        "build.revision": buildRevision
                     }
                 },
                 "from": "coverage"
@@ -30,14 +30,14 @@ function addTests() {
 
 function addSources() {
     importScript(['modevlib/main.js'], function(){
-        var build = $("#selectBuild").val();
+        var buildRevision = $("#selectBuildRevision").val();
         Thread.run(function*(){
             var sources = yield (search({
                 "limit": 10000,
                 "groupby": ["source.file"],
                 "where" : {
                     "eq":{
-                        "build.revision": build
+                        "build.revision": buildRevision
                     }
                 },
                 "from": "coverage"
@@ -71,7 +71,7 @@ function addBuild() {
                 return a[0].localeCompare(b[0]);
             });
             sources.data.forEach(function(element, index, array) {
-                $("#selectBuild").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+                $("#selectBuildRevision").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
             });
         });
     });
@@ -82,7 +82,7 @@ function addBuild() {
  * @param isDisabled true to disable all, false to enable all
  */
 function disableAll(isDisabled) {
-    $("#selectBuild").prop('disabled', isDisabled);
+    $("#selectBuildRevision").prop('disabled', isDisabled);
     $("#querySelect").prop('disabled', isDisabled);
     $("#select2").prop('disabled', isDisabled);
 }
