@@ -110,3 +110,53 @@ function encodeQueryData(data) {
         ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
     return ret.join("&");
 }
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    url = url.toLowerCase(); // This is just to avoid case sensitiveness  
+    name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();// This is just to avoid case sensitiveness for query parameter name
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function processQuery(queryId, param, executeDirectly) {
+    if (queryId == "1") {
+        if (!executeDirectly) {
+            query1();
+        }
+        else {
+            executeQuery1({
+                "test": param.select2,
+                "buildRevision": param.buildRevision
+            })
+        }
+    }
+    else if (queryId == "2") {
+        if (!executeDirectly) {
+            query2();
+        }
+        else {
+            executeQuery2({
+                "test": param.select2,
+                "buildRevision": param.buildRevision
+            })
+        }
+    }
+    else if (queryId == "3") {
+        if (!executeDirectly) {
+            query3();
+        }
+        else {
+            executeQuery3({
+                "sourceFile": param.select2,
+                "buildRevision": param.buildRevision
+            })
+        }
+    }
+    else if (queryId == "4") {
+        alert("Not implemented yet!");
+    }
+}

@@ -6,42 +6,52 @@ function query1() {
 
     $("#select2").on('change', function (e) {
         $("#resultTableBody").html("");
-        var valueSelected = this.value;
-        if (valueSelected === '') return;
+        
+        var test = this.value;
+        if (test === '') return;
         var buildRevision = $("#selectBuildRevision").val();
 
-        var query = {
-            "limit": 10000,
-            "where": {
-                "eq":{
-                    "test.url": valueSelected,
-                    "build.revision": buildRevision
-                }
-            },
-            "groupby": ["source.file"],
-            "from": "coverage"
-        };
+        executeQuery1({
+            "test": test,
+            "buildRevision": buildRevision
+        });
+    });
+}
 
-        importScript(['modevlib/main.js'], function(){
-            Thread.run(function*(){
-                // disable inputs while query is running
-                disableAll(true);
+function executeQuery1(param) {
+    var test = param.test;
+    var buildRevision = param.buildRevision;
+    var query = {
+        "limit": 10000,
+        "where": {
+            "eq":{
+                "test.url": test,
+                "build.revision": buildRevision
+            }
+        },
+        "groupby": ["source.file"],
+        "from": "coverage"
+    };
 
-                var sourceFiles = yield (search(query));
+    importScript(['modevlib/main.js'], function(){
+        Thread.run(function*(){
+            // disable inputs while query is running
+            disableAll(true);
 
-                sourceFiles.data.sort(function(a, b) {
-                    return a[0].localeCompare(b[0]);
-                });
-                sourceFiles.data.forEach(function(element, index, array) {
-                    $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
-                });
+            var sourceFiles = yield (search(query));
 
-                showPermalink();
-                $("#resultDesc").text("Source files touched by selected test:");
-
-                // re-enable the inputs
-                disableAll(false);
+            sourceFiles.data.sort(function(a, b) {
+                return a[0].localeCompare(b[0]);
             });
+            sourceFiles.data.forEach(function(element, index, array) {
+                $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+            });
+
+            showPermalink();
+            $("#resultDesc").text("Source files touched by selected test:");
+
+            // re-enable the inputs
+            disableAll(false);
         });
     });
 }

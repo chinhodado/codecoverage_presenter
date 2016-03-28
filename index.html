@@ -72,20 +72,35 @@
             }
             else {
                 $("#step2").show();
-                if (this.value == "1") {
-                    query1();
-                }
-                else if (this.value == "2") {
-                    query2();
-                }
-                else if (this.value == "3") {
-                    query3();
-                }
-                else if (this.value == "4") {
-                    alert("Not implemented yet!");
-                }
+                processQuery(this.value);
             }
         });
+
+        // use the query parameters if needed
+        var buildRevision = getParameterByName("buildRevision");
+        var query = getParameterByName("query");
+        var select2 = getParameterByName("select2");
+
+        if (buildRevision) {
+            $("#selectBuildRevision").val(buildRevision);
+        }
+
+        if (query) {
+            $("#querySelect").val(query);
+        }
+
+        if (select2) {
+            $("#select2").val(select2);
+        }
+
+        if (query && select2) {
+            var param = {
+                "buildRevision": buildRevision,
+                "select2": select2
+            };
+            $("#step2").show();
+            processQuery(query, param, true);
+        }
 
 </script>
 </body>
