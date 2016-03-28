@@ -12,6 +12,9 @@ function query2() {
 
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
+                // disable inputs while query is running
+                disableAll(true);
+                
                 // get source files covered by test
                 var sources = yield (search({
                     "from": "coverage",
@@ -57,6 +60,9 @@ function query2() {
                     if (element.tests.length > 0) return;
                     $("#resultTableBody").append("<tr><td>" + element.source + "</td></tr>")
                 });
+
+                // re-enable the inputs
+                disableAll(false);
             });
         });
     });

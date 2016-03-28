@@ -76,3 +76,13 @@ function addBuild() {
         });
     });
 }
+
+/**
+ * Disable or enable all inputs
+ * @param isDisabled true to disable all, false to enable all
+ */
+function disableAll(isDisabled) {
+    $("#selectBuild").prop('disabled', isDisabled);
+    $("#querySelect").prop('disabled', isDisabled);
+    $("#select2").prop('disabled', isDisabled);
+}

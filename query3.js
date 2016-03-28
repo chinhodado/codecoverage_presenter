@@ -12,6 +12,9 @@ function query3() {
 
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
+                // disable inputs while query is running
+                disableAll(true);
+                
                 var testFiles = yield (search({
                     "limit": 10000,
                     "where": {
@@ -30,6 +33,9 @@ function query3() {
                 testFiles.data.forEach(function(element, index, array) {
                     $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
                 });
+
+                // re-enable the inputs
+                disableAll(false);
             });
         });
     });

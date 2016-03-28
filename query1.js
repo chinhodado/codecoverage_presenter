@@ -24,6 +24,9 @@ function query1() {
 
         importScript(['modevlib/main.js'], function(){
             Thread.run(function*(){
+                // disable inputs while query is running
+                disableAll(true);
+
                 var sourceFiles = yield (search(query));
 
                 sourceFiles.data.sort(function(a, b) {
@@ -32,6 +35,9 @@ function query1() {
                 sourceFiles.data.forEach(function(element, index, array) {
                     $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
                 });
+
+                // re-enable the inputs
+                disableAll(false);
             });
         });
     });
