@@ -60,12 +60,13 @@ JsonCcov.prototype.setQueries = function (queriesToDo) {
 
 JsonCcov.prototype.storeResults = function(source, callback){
     this.result = source;
+    console.log("This next line is output once the query is finished. It has values in the object.")
     console.log(this.result);
     return callback();
 };
 
 JsonCcov.prototype._callBack = function(source){
-    console.log("ended");
+    console.log("Ended the query.");
     return source;
 };
 
@@ -77,7 +78,6 @@ JsonCcov.prototype.getQueryResults = function () {
     
     var queryDone = this.queryType;
     
-    console.log(queryDone);
     return queryDone.performQuery(this.storeResults, this._callBack);
     console.log(this.result);
     
