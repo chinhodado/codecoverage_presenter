@@ -7,21 +7,28 @@
     <script src="modevlib/imports/import.js"></script>
     <script src="common.js"></script>
     <script src="query1.js"></script>
+    <script src="query2.js"></script>
     <script src="query3.js"></script>
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
 </head>
 <body>
     <div id="mainContent" style="width:80%; margin: 0 auto;">
         <h2>ActiveData Code Coverage Query Tool</h2>
+        <p id="selectBuildRevisionLabel">Select a build revision</p>
+        <select id="selectBuildRevision"></select>
+        <br><br>
+
         <p>Select a query:</p>
         <select id="querySelect"></select>
         <br><br>
 
         <div id="step2" style="display: none">
-            <p id="selectLabel2">Select a test:</p>
+            <p id="selectLabel2"></p>
             <select id="select2"></select>
             <br><br>
 
+            <p id="permalink"></p>
+            <br>
             <p id="resultDesc"></p>
             <div id="resultTable">
                 <table>
@@ -41,6 +48,9 @@
             }));
             yield (output);
         };
+
+        // add the list of builds
+        addBuild();
 
         // populate the query select
         var queryList = {
@@ -62,20 +72,35 @@
             }
             else {
                 $("#step2").show();
-                if (this.value == "1") {
-                    query1();
-                }
-                else if (this.value == "2") {
-                    alert("Not implemented yet!");
-                }
-                else if (this.value == "3") {
-                    query3();
-                }
-                else if (this.value == "4") {
-                    alert("Not implemented yet!");
-                }
+                processQuery(this.value);
             }
         });
+
+        // use the query parameters if needed
+        var buildRevision = getParameterByName("buildRevision");
+        var query = getParameterByName("query");
+        var select2 = getParameterByName("select2");
+
+        if (buildRevision) {
+            $("#selectBuildRevision").val(buildRevision);
+        }
+
+        if (query) {
+            $("#querySelect").val(query);
+        }
+
+        if (select2) {
+            $("#select2").val(select2);
+        }
+
+        if (query && select2) {
+            var param = {
+                "buildRevision": buildRevision,
+                "select2": select2
+            };
+            $("#step2").show();
+            processQuery(query, param, true);
+        }
 
 </script>
 </body>
