@@ -509,6 +509,7 @@ if (!window.Log) {
   };
   Log.warning = console.warn;
   Log.note =   Log.note = function(v){console.log(v);};
+  Log.alert = Log.note;
 }//endif
 
 
