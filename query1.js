@@ -12,23 +12,18 @@ function query1() {
         var buildRevision = $("#selectBuildRevision").val();
 
         executeQuery1({
-            "test": test,
-            "buildRevision": buildRevision
+            "eq": {
+                "test.url": test,
+                "build.revision": buildRevision
+            }
         });
     });
 }
 
-function executeQuery1(param) {
-    var test = param.test;
-    var buildRevision = param.buildRevision;
+function executeQuery1(where) {
     var query = {
         "limit": 10000,
-        "where": {
-            "eq":{
-                "test.url": test,
-                "build.revision": buildRevision
-            }
-        },
+        "where": where,
         "groupby": ["source.file"],
         "from": "coverage"
     };

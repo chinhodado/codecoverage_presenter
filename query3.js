@@ -12,28 +12,22 @@ function query3() {
         var buildRevision = $("#selectBuildRevision").val();
 
         executeQuery3({
-            "sourceFile": sourceFile,
-            "buildRevision": buildRevision
+            "eq":{
+                "source.file": sourceFile,
+                "build.revision": buildRevision
+            }
         });
     });
 }
 
-function executeQuery3(param) {
-    var sourceFile = param.sourceFile;
-    var buildRevision = param.buildRevision;
-        
+function executeQuery3(where) {
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
 
         var testFiles = yield (search({
             "limit": 10000,
-            "where": {
-                "eq":{
-                    "source.file": sourceFile,
-                    "build.revision": buildRevision
-                }
-            },
+            "where": where,
             "groupby": ["test.url"],
             "from": "coverage"
         }));

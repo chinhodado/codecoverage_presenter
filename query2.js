@@ -12,15 +12,15 @@ function query2() {
         var buildRevision = $("#selectBuildRevision").val();
 
         executeQuery2({
-            "test": test,
-            "buildRevision": buildRevision
+            "eq": {
+                "test.url": test,
+                "build.revision": buildRevision
+            }
         });
     });
 }
 
-function executeQuery2(param) {
-    var test = param.test;
-    var buildRevision = param.buildRevision; 
+function executeQuery2(where) {
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
@@ -28,12 +28,7 @@ function executeQuery2(param) {
         // get source files covered by test
         var sources = yield (search({
             "from": "coverage",
-            "where": {
-                "eq": {
-                    "test.url": test,
-                    "build.revision": buildRevision
-                }
-            },
+            "where": where,
             "groupby": [
                 {"name": "source", "value": "source.file"}
             ],
@@ -61,6 +56,7 @@ function executeQuery2(param) {
         siblings.data = qb.sort(siblings.data, "tests.length");
 
         // remove self
+        var test = where.eq["test.url"];
         siblings.data.forall(function(v){
             v.tests.remove(test);
         });

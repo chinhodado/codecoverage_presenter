@@ -117,15 +117,18 @@ function getParameterByName(name, url) {
 }
 
 function processQuery(queryId, param, executeDirectly) {
+    // TODO: clean up this ugly mess
     if (queryId == "1") {
         if (!executeDirectly) {
             query1();
         }
         else {
             executeQuery1({
-                "test": param.select2,
-                "buildRevision": param.buildRevision
-            })
+                "eq": {
+                    "test.url": param.select2,
+                    "build.revision": param.buildRevision
+                }
+            });
         }
     }
     else if (queryId == "2") {
@@ -134,9 +137,11 @@ function processQuery(queryId, param, executeDirectly) {
         }
         else {
             executeQuery2({
-                "test": param.select2,
-                "buildRevision": param.buildRevision
-            })
+                "eq": {
+                    "test.url": param.select2,
+                    "build.revision": param.buildRevision
+                }
+            });
         }
     }
     else if (queryId == "3") {
@@ -145,9 +150,11 @@ function processQuery(queryId, param, executeDirectly) {
         }
         else {
             executeQuery3({
-                "sourceFile": param.select2,
-                "buildRevision": param.buildRevision
-            })
+                "eq":{
+                    "source.file": param.select2,
+                    "build.revision": param.buildRevision
+                }
+            });
         }
     }
     else if (queryId == "4") {
