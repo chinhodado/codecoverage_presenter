@@ -33,25 +33,23 @@ function executeQuery1(param) {
         "from": "coverage"
     };
 
-    importScript(['modevlib/main.js'], function(){
-        Thread.run(function*(){
-            // disable inputs while query is running
-            disableAll(true);
+    Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
 
-            var sourceFiles = yield (search(query));
+        var sourceFiles = yield (search(query));
 
-            sourceFiles.data.sort(function(a, b) {
-                return a[0].localeCompare(b[0]);
-            });
-            sourceFiles.data.forEach(function(element, index, array) {
-                $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
-            });
-
-            showPermalink();
-            $("#resultDesc").text("Source files touched by selected test:");
-
-            // re-enable the inputs
-            disableAll(false);
+        sourceFiles.data.sort(function(a, b) {
+            return a[0].localeCompare(b[0]);
         });
+        sourceFiles.data.forEach(function(element, index, array) {
+            $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+        });
+
+        showPermalink();
+        $("#resultDesc").text("Source files touched by selected test:");
+
+        // re-enable the inputs
+        disableAll(false);
     });
 }

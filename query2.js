@@ -21,61 +21,59 @@ function query2() {
 function executeQuery2(param) {
     var test = param.test;
     var buildRevision = param.buildRevision; 
-    importScript(['modevlib/main.js'], function(){
-        Thread.run(function*(){
-            // disable inputs while query is running
-            disableAll(true);
+    Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
 
-            // get source files covered by test
-            var sources = yield (search({
-                "from": "coverage",
-                "where": {
-                    "eq": {
-                        "test.url": test,
-                        "build.revision": buildRevision
-                    }
-                },
-                "groupby": [
-                    {"name": "source", "value": "source.file"}
-                ],
-                "limit": 100000,
-                "format": "list"
-            }));
+        // get source files covered by test
+        var sources = yield (search({
+            "from": "coverage",
+            "where": {
+                "eq": {
+                    "test.url": test,
+                    "build.revision": buildRevision
+                }
+            },
+            "groupby": [
+                {"name": "source", "value": "source.file"}
+            ],
+            "limit": 100000,
+            "format": "list"
+        }));
 
-            // for each file, find number of other tests
-            var siblings = yield (search({
-                // find test that cover the same
-                "from": "coverage",
-                "select": {"name": "tests", "value": "test.url", "aggregate": "union"},
-                "where": {
-                    "in": {
-                        "source.file": sources.data.select("source")
-                    }
-                    // TODO: do we need to specify build revision here?
-                },
-                "groupby": [
-                    {"name": "source", "value": "source.file"}
-                ],
-                "limit": 100000,
-                "format": "list"
-            }));
-            siblings.data = qb.sort(siblings.data, "tests.length");
+        // for each file, find number of other tests
+        var siblings = yield (search({
+            // find test that cover the same
+            "from": "coverage",
+            "select": {"name": "tests", "value": "test.url", "aggregate": "union"},
+            "where": {
+                "in": {
+                    "source.file": sources.data.select("source")
+                }
+                // TODO: do we need to specify build revision here?
+            },
+            "groupby": [
+                {"name": "source", "value": "source.file"}
+            ],
+            "limit": 100000,
+            "format": "list"
+        }));
+        siblings.data = qb.sort(siblings.data, "tests.length");
 
-            // remove self
-            siblings.data.forall(function(v){
-                v.tests.remove(test);
-            });
-
-            showPermalink();
-            $("#resultDesc").text("Unique source files touched by selected test:");
-
-            siblings.data.forEach(function(element, index, array) {
-                if (element.tests.length > 0) return;
-                $("#resultTableBody").append("<tr><td>" + element.source + "</td></tr>")
-            });
-
-            // re-enable the inputs
-            disableAll(false);
+        // remove self
+        siblings.data.forall(function(v){
+            v.tests.remove(test);
         });
+
+        showPermalink();
+        $("#resultDesc").text("Unique source files touched by selected test:");
+
+        siblings.data.forEach(function(element, index, array) {
+            if (element.tests.length > 0) return;
+            $("#resultTableBody").append("<tr><td>" + element.source + "</td></tr>")
+        });
+
+        // re-enable the inputs
+        disableAll(false);
     });
 }
