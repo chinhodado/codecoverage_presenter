@@ -36,7 +36,10 @@ function executeQuery3(where) {
             return a[0].localeCompare(b[0]);
         });
         testFiles.data.forEach(function(element, index, array) {
-            $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+            var tokens = element[0].split("/");
+            var testName = tokens[tokens.length - 1];
+            var dxrLink = getDxrLink(testName);
+            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
         });
 
         showPermalink();

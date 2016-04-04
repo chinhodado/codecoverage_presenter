@@ -66,7 +66,10 @@ function executeQuery2(where) {
 
         siblings.data.forEach(function(element, index, array) {
             if (element.tests.length > 0) return;
-            $("#resultTableBody").append("<tr><td>" + element.source + "</td></tr>")
+            var tokens = element.source.split("/");
+            var sourceName = tokens[tokens.length - 1];
+            var dxrLink = getDxrLink(sourceName);
+            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element.source + "</a></td></tr>");
         });
 
         // re-enable the inputs

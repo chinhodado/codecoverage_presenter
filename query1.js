@@ -40,8 +40,8 @@ function executeQuery1(where) {
         sourceFiles.data.forEach(function(element, index, array) {
             var tokens = element[0].split("/");
             var sourceName = tokens[tokens.length - 1];
-            var dxrLink = "https://dxr.mozilla.org/mozilla-central/search?q=" + sourceName + "&redirect=false&case=false"
-            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element[0] + "</a></td></tr>")
+            var dxrLink = getDxrLink(sourceName);
+            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
         });
 
         showPermalink();

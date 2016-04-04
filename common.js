@@ -160,3 +160,7 @@ function processQuery(queryId, param, executeDirectly) {
         alert("Not implemented yet!");
     }
 }
+
+function getDxrLink(fileName) {
+    return "https://dxr.mozilla.org/mozilla-central/search?q=" + fileName + "&redirect=false&case=false";
+}
