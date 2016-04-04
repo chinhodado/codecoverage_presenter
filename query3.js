@@ -39,7 +39,7 @@ function executeQuery3(where) {
             var tokens = element[0].split("/");
             var testName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(testName);
-            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
+            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
         });
 
         showPermalink();

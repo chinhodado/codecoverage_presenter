@@ -69,7 +69,7 @@ function executeQuery2(where) {
             var tokens = element.source.split("/");
             var sourceName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(sourceName);
-            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element.source + "</a></td></tr>");
+            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element.source + "</a></td></tr>");
         });
 
         // re-enable the inputs
