@@ -38,7 +38,10 @@ function executeQuery1(where) {
             return a[0].localeCompare(b[0]);
         });
         sourceFiles.data.forEach(function(element, index, array) {
-            $("#resultTableBody").append("<tr><td>" + element[0] + "</td></tr>")
+            var tokens = element[0].split("/");
+            var sourceName = tokens[tokens.length - 1];
+            var dxrLink = "https://dxr.mozilla.org/mozilla-central/search?q=" + sourceName + "&redirect=false&case=false"
+            $("#resultTableBody").append("<tr><td><a href='" + dxrLink + "'>" + element[0] + "</a></td></tr>")
         });
 
         showPermalink();
