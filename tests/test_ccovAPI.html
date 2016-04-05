@@ -10,6 +10,7 @@
     <script src="../query2.js"></script>
     <script src="../query3.js"></script>
     <script src="../ccov_api.js"></script>
+    <script src="../modevlib/main.js"></script>
     <link type="text/css" rel="stylesheet" href="../css/menu.css"/>
 </head>
 <body>
@@ -33,23 +34,39 @@
             </div>
         </div>
     </div>
-
+    
     <script type="application/javascript">
-
-        var search = function*(query){
-            var output = yield (Rest.post({
-                url: "https://activedata.allizom.org/query",
-                json: query
-            }));
-            yield (output);
-        };
         
         var ccov = new JsonCcov();
-        var query = new QueryFilesOfTest("chrome://mochitests/content/browser/addon-sdk/test/browser_sdk_loader_chrome.js");
+        var test = "chrome://mochitests/content/browser/addon-sdk/test/browser_sdk_loader_chrome.js";
+        var buildRevision = "5bad27378cc206c00a3f593409076b24367efdb2";
+        var params = {
+            "eq":{
+                "test.url": test,
+                "build.revision": buildRevision
+            }
+        };
+        
+        var params2 = {
+            "prefix":{
+                "test.url":"chrome://mochitests/content/browser/browser/components/places/tests/browser/"
+            }
+        };
+        
+        var query = new QueryFilesOfTest(params);
+        var query2 = new QueryCommonFiles(params2);
+        
         ccov.setQuery(query);
-        var results = ccov.getQueryResults();
-        console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
-        console.log(results);
+        var results = ccov.getQueryResults(function(results) { 
+            console.log("Complete"); 
+            console.log(results);
+        });
+        
+        ccov.setQuery(query2);
+        var results = ccov.getQueryResults(function(results) {
+            console.log("Complete.");
+            console.log(results); 
+        });
 
 </script>
 </body>
