@@ -102,7 +102,7 @@ function disableAll(isDisabled) {
 }
 
 function showPermalink() {
-    var permalink = window.location.href + "?" + getUrlQueryString();
+    var permalink = window.location.href.split('?')[0] + "?" + getUrlQueryString();
     $("#permalink").text("Permalink: " + permalink);
 }
 
