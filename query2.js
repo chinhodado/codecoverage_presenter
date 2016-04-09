@@ -1,8 +1,8 @@
 /**
  * Given a test, which unique files does it touch?
  */
-function prepareQuery2() {
-    addTests();    
+function prepareQuery2(param) {
+    addTests(param);    
 }
 
 function executeQuery2Manual() {

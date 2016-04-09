@@ -38,10 +38,6 @@ function setupPage() {
         querySelect.val(query);
     }
 
-    if (select2) {
-        $("#select2").val(select2);
-    }
-
     if (query && select2) {
         var param = {
             "buildRevision": buildRevision,

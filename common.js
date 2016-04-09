@@ -1,4 +1,4 @@
-function addTests() {
+function addTests(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
         var tests = yield (search({
@@ -24,10 +24,14 @@ function addTests() {
             select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>")
         });
         select2.filterByText($("#select2Filter"), false);
+
+        if (param) {
+            select2.val(param.select2);
+        }
     });
 }
 
-function addSources() {
+function addSources(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
         var sources = yield (search({
@@ -53,6 +57,10 @@ function addSources() {
             select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
         select2.filterByText($("#select2Filter"), false);
+
+        if (param) {
+            select2.val(param.select2);
+        }
     });
 }
 
@@ -130,10 +138,8 @@ function getParameterByName(name, url) {
 function processQuery(queryId, param, executeDirectly) {
     // TODO: clean up this ugly mess
     if (queryId == "1") {
-        if (!executeDirectly) {
-            prepareQuery1();
-        }
-        else {
+        prepareQuery1(param);
+        if (executeDirectly) {
             executeQuery1({
                 "eq": {
                     "test.url": param.select2,
@@ -143,10 +149,8 @@ function processQuery(queryId, param, executeDirectly) {
         }
     }
     else if (queryId == "2") {
-        if (!executeDirectly) {
-            prepareQuery2();
-        }
-        else {
+        prepareQuery2(param);
+        if (executeDirectly) {
             executeQuery2({
                 "eq": {
                     "test.url": param.select2,
@@ -156,10 +160,8 @@ function processQuery(queryId, param, executeDirectly) {
         }
     }
     else if (queryId == "3") {
-        if (!executeDirectly) {
-            prepareQuery3();
-        }
-        else {
+        prepareQuery3(param);
+        if (executeDirectly) {
             executeQuery3({
                 "eq":{
                     "source.file": param.select2,

@@ -1,8 +1,8 @@
 /**
  * Given a source file, which tests touch it?
  */
-function prepareQuery3() {
-    addSources();    
+function prepareQuery3(param) {
+    addSources(param);    
 }
 
 function executeQuery3Manual() {

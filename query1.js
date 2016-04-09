@@ -1,8 +1,8 @@
 /**
  * Given a test, which files does it touch?
  */
-function prepareQuery1() {
-    addTests();
+function prepareQuery1(param) {
+    addTests(param);
 }
 
 function executeQuery1Manual() {
