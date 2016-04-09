@@ -1,3 +1,6 @@
+// global variables
+var usePermalinkFlag = false;
+
 function addTests(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
@@ -107,9 +110,18 @@ function showPermalink() {
 }
 
 function getUrlQueryString() {
-    var buildRevision = $("#selectBuildRevision").val();
-    var query = $("#querySelect").val();
-    var select2 = $("#select2").val();
+    if (usePermalinkFlag) {
+        var buildRevision = getParameterByName("buildRevision");
+        var query = getParameterByName("query");
+        var select2 = getParameterByName("select2");
+        usePermalinkFlag = false;
+    }
+    else {
+        buildRevision = $("#selectBuildRevision").val();
+        query = $("#querySelect").val();
+        select2 = $("#select2").val();
+    }
+
     var param = {
         "buildRevision": buildRevision,
         "query": query,

@@ -38,7 +38,9 @@ function setupPage() {
         querySelect.val(query);
     }
 
+    // loaded from permalink, process query directly
     if (query && select2) {
+        usePermalinkFlag = true;
         var param = {
             "buildRevision": buildRevision,
             "select2": select2
