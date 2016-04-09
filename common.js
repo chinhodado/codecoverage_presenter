@@ -56,7 +56,12 @@ function addSources() {
     });
 }
 
-function addBuild() {
+/**
+ * Populate the list of build revisions
+ * @param buildRevision If set (e.g. coming from permalink), this will be used as the value
+ *                      of the select after populating it.
+ */
+function addBuild(buildRevision) {
     Thread.run(function*(){
         var sources = yield (search({
             "limit": 10000,
@@ -70,6 +75,10 @@ function addBuild() {
         sources.data.forEach(function(element, index, array) {
             $("#selectBuildRevision").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
+
+        if (buildRevision) {
+            $("#selectBuildRevision").val(buildRevision);
+        }
     });
 }
 

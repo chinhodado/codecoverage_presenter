@@ -7,8 +7,13 @@ var search = function*(query){
 };
 
 function setupPage() {
+    // get query parameters
+    var buildRevision = getParameterByName("buildRevision");
+    var query = getParameterByName("query");
+    var select2 = getParameterByName("select2");
+
     // add the list of builds
-    addBuild();
+    addBuild(buildRevision);
 
     // populate the query select
     var queryList = {
@@ -28,15 +33,6 @@ function setupPage() {
         $("#step2").show();
         processQuery(this.value);
     });
-
-    // use the query parameters if needed
-    var buildRevision = getParameterByName("buildRevision");
-    var query = getParameterByName("query");
-    var select2 = getParameterByName("select2");
-
-    if (buildRevision) {
-        $("#selectBuildRevision").val(buildRevision);
-    }
 
     if (query) {
         querySelect.val(query);
