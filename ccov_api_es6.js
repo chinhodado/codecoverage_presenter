@@ -1,4 +1,3 @@
-
 /**
 *
 * This is the interface for all types of queries. It is used in JsonCcov
@@ -11,7 +10,6 @@
 
 
 class Query {
-    
     constructor (testParams) {
         this.testParameters = testParams
     }
@@ -20,7 +18,6 @@ class Query {
         var x = {};
         return x;
     }
-    
 }
 
 /**
@@ -144,13 +141,13 @@ export class QueryFilesOfTest extends Query {
 
 export class QueryTestsOfSource extends Query {
     constructor (testParams) {
-        super();
+        super(testParams);
     }
 }
 
 export class QueryCommonFiles extends Query {
     constructor (testParams) {
-        super();
+        super(testParams);
     }
     
     performQuery (callback) {/**
@@ -211,13 +208,13 @@ export class QueryCommonFiles extends Query {
             }//endif
         });
         console.log(commonSources);
-        return commonSources;
-    }**/
+        return commonSources; **/
+    }
 }
 
 export class QueryCustom extends Query {
     constructor(testparams){
-        this.testParameters = testparams;
+        super(testparams);
     }
     
     performQuery () {
