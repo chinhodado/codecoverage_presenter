@@ -1,3 +1,7 @@
 label {
     display: block;
 }
+
+#permalink {
+    word-wrap: break-word;
+}
