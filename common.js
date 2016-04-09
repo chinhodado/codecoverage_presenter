@@ -163,7 +163,7 @@ function processQuery(queryId, param, executeDirectly) {
 }
 
 function getDxrLink(fileName) {
-    return "https://dxr.mozilla.org/mozilla-central/search?q=" + fileName + "&redirect=false&case=false";
+    return "https://dxr.mozilla.org/mozilla-central/search?q=path%3A" + fileName + "&redirect=false&case=false";
 }
 
 function submitForm() {
