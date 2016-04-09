@@ -106,7 +106,7 @@ function disableAll(isDisabled) {
 
 function showPermalink() {
     var permalink = window.location.href.split('?')[0] + "?" + getUrlQueryString();
-    $("#permalink").text("Permalink: " + permalink);
+    $("#permalink").text(permalink);
 }
 
 function getUrlQueryString() {
