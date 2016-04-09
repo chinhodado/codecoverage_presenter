@@ -18,12 +18,13 @@ function setupPage() {
         4: "Given a patch (list of source files and methods adjusted) recommend which tests I should run."
     };
 
+    var querySelect = $("#querySelect");
     for (var key in queryList) {
         if (!queryList.hasOwnProperty(key)) continue;
-        $("#querySelect").append("<option value='" + key + "'>" + queryList[key] + "</option>");
+        querySelect.append("<option value='" + key + "'>" + queryList[key] + "</option>");
     }
 
-    $("#querySelect").on('change', function (e) {
+    querySelect.on('change', function (e) {
         $("#step2").show();
         processQuery(this.value);
     });
@@ -38,7 +39,7 @@ function setupPage() {
     }
 
     if (query) {
-        $("#querySelect").val(query);
+        querySelect.val(query);
     }
 
     if (select2) {

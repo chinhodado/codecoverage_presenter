@@ -14,15 +14,16 @@ function addTests() {
 
         $("#selectLabel2").text("Select a test:");
         $("#resultDesc").text("");
-        $("#select2").empty();
+        var select2 = $("#select2");
+        select2.empty();
 
         tests.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
         tests.data.forEach(function(element, index, array) {
-            $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
+            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>")
         });
-        $("#select2").filterByText($("#select2Filter"), false);
+        select2.filterByText($("#select2Filter"), false);
     });
 }
 
@@ -42,15 +43,16 @@ function addSources() {
 
         $("#selectLabel2").text("Select a source file:");
         $("#resultDesc").text("");
-        $("#select2").empty();
+        var select2 = $("#select2");
+        select2.empty();
 
         sources.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
         sources.data.forEach(function(element, index, array) {
-            $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
-        $("#select2").filterByText($("#select2Filter"), false);
+        select2.filterByText($("#select2Filter"), false);
     });
 }
 
