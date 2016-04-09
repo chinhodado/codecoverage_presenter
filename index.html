@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>ActiveData Code Coverage Query Tool</title>
     <script src="lib/jquery.js"></script>
+    <script src="filterByText.js"></script>
     <script src="modevlib/imports/import.js"></script>
     <script src="common.js"></script>
     <script src="query1.js"></script>
@@ -17,16 +18,17 @@
     <div id="mainContent" style="width:80%; margin: 0 auto;">
         <h2>ActiveData Code Coverage Query Tool</h2>
         <label for="selectBuildRevision">Select a build revision</label>
-        <select id="selectBuildRevision"></select>
+        <select id="selectBuildRevision" size="5"></select>
         <br><br>
 
         <label for="querySelect">Select a query:</label>
-        <select id="querySelect"></select>
+        <select id="querySelect" size="5"></select>
         <br><br>
 
         <div id="step2" style="display: none">
             <label id="selectLabel2" for="select2"></label>
-            <select id="select2"></select>
+            <input type="text" title="Filter file" id="select2Filter"><br>
+            <select id="select2" size="5"></select>
             <br><br>
 
             <input id="submitButton" type="submit" value="Run query" onclick="submitForm()">

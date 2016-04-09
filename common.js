@@ -23,6 +23,7 @@ function addTests() {
         tests.data.forEach(function(element, index, array) {
             $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
         });
+        $("#select2").filterByText($("#select2Filter"), false);
     });
 }
 
@@ -51,6 +52,7 @@ function addSources() {
         sources.data.forEach(function(element, index, array) {
             $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
+        $("#select2").filterByText($("#select2Filter"), false);
     });
 }
 
