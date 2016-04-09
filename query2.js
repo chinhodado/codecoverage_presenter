@@ -8,7 +8,7 @@ function prepareQuery2(param) {
 function executeQuery2Manual() {
     var select2 = $("#select2");
     var test = select2.val();
-    if (test === '') return;
+    if (!test) return;
     var buildRevision = $("#selectBuildRevision").val();
 
     executeQuery2({

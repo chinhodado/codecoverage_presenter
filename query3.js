@@ -8,7 +8,7 @@ function prepareQuery3(param) {
 function executeQuery3Manual() {
     var select2 = $("#select2");
     var sourceFile = select2.val();
-    if (sourceFile === '') return;
+    if (!sourceFile) return;
     var buildRevision = $("#selectBuildRevision").val();
 
     executeQuery3({
