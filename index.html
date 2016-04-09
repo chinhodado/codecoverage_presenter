@@ -11,20 +11,21 @@
     <script src="query3.js"></script>
     <script src="setupPage.js"></script>
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
+    <link type="text/css" rel="stylesheet" href="css/page.css"/>
 </head>
 <body>
     <div id="mainContent" style="width:80%; margin: 0 auto;">
         <h2>ActiveData Code Coverage Query Tool</h2>
-        <p id="selectBuildRevisionLabel">Select a build revision</p>
+        <label for="selectBuildRevision">Select a build revision</label>
         <select id="selectBuildRevision"></select>
         <br><br>
 
-        <p>Select a query:</p>
+        <label for="querySelect">Select a query:</label>
         <select id="querySelect"></select>
         <br><br>
 
         <div id="step2" style="display: none">
-            <p id="selectLabel2"></p>
+            <label id="selectLabel2" for="select2"></label>
             <select id="select2"></select>
             <br><br>
 
