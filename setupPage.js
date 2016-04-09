@@ -12,7 +12,6 @@ function setupPage() {
 
     // populate the query select
     var queryList = {
-        0: "",
         1: "Given a test, which files does it touch?",
         2: "Given a test, which unique files does it touch?",
         3: "Given a source file, which tests touch it?",
@@ -25,13 +24,8 @@ function setupPage() {
     }
 
     $("#querySelect").on('change', function (e) {
-        if (this.value == "0") {
-            $("#step2").hide();
-        }
-        else {
-            $("#step2").show();
-            processQuery(this.value);
-        }
+        $("#step2").show();
+        processQuery(this.value);
     });
 
     // use the query parameters if needed

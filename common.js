@@ -15,7 +15,6 @@ function addTests() {
         $("#selectLabel2").text("Select a test:");
         $("#resultDesc").text("");
         $("#select2").empty();
-        $("#select2").append("<option value=''></option>");
 
         tests.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
@@ -44,7 +43,6 @@ function addSources() {
         $("#selectLabel2").text("Select a source file:");
         $("#resultDesc").text("");
         $("#select2").empty();
-        $("#select2").append("<option value=''></option>");
 
         sources.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
