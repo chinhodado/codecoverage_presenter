@@ -79,6 +79,7 @@ function disableAll(isDisabled) {
     $("#selectBuildRevision").prop('disabled', isDisabled);
     $("#querySelect").prop('disabled', isDisabled);
     $("#select2").prop('disabled', isDisabled);
+    $("#submitButton").prop('disabled', isDisabled);
 }
 
 function showPermalink() {
@@ -119,7 +120,7 @@ function processQuery(queryId, param, executeDirectly) {
     // TODO: clean up this ugly mess
     if (queryId == "1") {
         if (!executeDirectly) {
-            query1();
+            prepareQuery1();
         }
         else {
             executeQuery1({
@@ -132,7 +133,7 @@ function processQuery(queryId, param, executeDirectly) {
     }
     else if (queryId == "2") {
         if (!executeDirectly) {
-            query2();
+            prepareQuery2();
         }
         else {
             executeQuery2({
@@ -145,7 +146,7 @@ function processQuery(queryId, param, executeDirectly) {
     }
     else if (queryId == "3") {
         if (!executeDirectly) {
-            query3();
+            prepareQuery3();
         }
         else {
             executeQuery3({
@@ -163,4 +164,19 @@ function processQuery(queryId, param, executeDirectly) {
 
 function getDxrLink(fileName) {
     return "https://dxr.mozilla.org/mozilla-central/search?q=" + fileName + "&redirect=false&case=false";
+}
+
+function submitForm() {
+    $("#resultTableBody").html("");
+    var query = $("#querySelect").val();
+    
+    if (query == "1") {
+        executeQuery1Manual();
+    }
+    else if (query == "2") {
+        executeQuery2Manual();
+    }
+    else if (query == "3") {
+        executeQuery3Manual();
+    }
 }
