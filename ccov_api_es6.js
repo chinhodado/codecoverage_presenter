@@ -44,7 +44,7 @@ class Query {
 *
 */
 
-export class JsonCcov {
+class JsonCcov {
     constructor () {
         this.queryType = new Query();
         this.queries = [];
@@ -118,7 +118,7 @@ var search = function(query, callback){
 * This query can be used to find all the source files that were accessed by
 * the given test.
 */
-export class QueryFilesOfTest extends Query {
+class QueryFilesOfTest extends Query {
     constructor (testParams) {
         super(testParams);
     }
@@ -139,13 +139,13 @@ export class QueryFilesOfTest extends Query {
 }
 
 
-export class QueryTestsOfSource extends Query {
+class QueryTestsOfSource extends Query {
     constructor (testParams) {
         super(testParams);
     }
 }
 
-export class QueryCommonFiles extends Query {
+class QueryCommonFiles extends Query {
     constructor (testParams) {
         super(testParams);
     }
@@ -212,7 +212,7 @@ export class QueryCommonFiles extends Query {
     }
 }
 
-export class QueryCustom extends Query {
+class QueryCustom extends Query {
     constructor(testparams){
         super(testparams);
     }
@@ -220,6 +220,3 @@ export class QueryCustom extends Query {
     performQuery () {
     }
 }
-
-
-var jsonCcov = new JsonCcov();
