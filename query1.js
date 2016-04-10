@@ -1,22 +1,21 @@
 /**
  * Given a test, which files does it touch?
  */
-function query1() {
-    addTests();
+function prepareQuery1(param) {
+    addTests(param);
+}
 
-    $("#select2").on('change', function (e) {
-        $("#resultTableBody").html("");
-        
-        var test = this.value;
-        if (test === '') return;
-        var buildRevision = $("#selectBuildRevision").val();
+function executeQuery1Manual() {
+    var select2 = $("#select2");
+    var test = select2.val();
+    if (test === '') return;
+    var buildRevision = $("#selectBuildRevision").val();
 
-        executeQuery1({
-            "eq": {
-                "test.url": test,
-                "build.revision": buildRevision
-            }
-        });
+    executeQuery1({
+        "eq": {
+            "test.url": test,
+            "build.revision": buildRevision
+        }
     });
 }
 

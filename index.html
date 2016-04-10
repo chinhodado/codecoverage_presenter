@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>ActiveData Code Coverage Query Tool</title>
     <script src="lib/jquery.js"></script>
+    <script src="filterByText.js"></script>
     <script src="modevlib/imports/import.js"></script>
     <script src="common.js"></script>
     <script src="query1.js"></script>
@@ -11,23 +12,29 @@
     <script src="query3.js"></script>
     <script src="setupPage.js"></script>
     <link type="text/css" rel="stylesheet" href="css/menu.css"/>
+    <link type="text/css" rel="stylesheet" href="css/page.css"/>
 </head>
 <body>
     <div id="mainContent" style="width:80%; margin: 0 auto;">
         <h2>ActiveData Code Coverage Query Tool</h2>
-        <p id="selectBuildRevisionLabel">Select a build revision</p>
-        <select id="selectBuildRevision"></select>
+        <label for="selectBuildRevision">Select a build revision</label>
+        <select id="selectBuildRevision" size="5"></select>
         <br><br>
 
-        <p>Select a query:</p>
-        <select id="querySelect"></select>
+        <label for="querySelect">Select a query:</label>
+        <select id="querySelect" size="5"></select>
         <br><br>
 
         <div id="step2" style="display: none">
-            <p id="selectLabel2"></p>
-            <select id="select2"></select>
+            <label id="selectLabel2" for="select2"></label>
+            <input type="text" title="Filter file" id="select2Filter"><br>
+            <select id="select2" size="5"></select>
             <br><br>
 
+            <input id="submitButton" type="submit" value="Run query" onclick="submitForm()">
+            <br><br>
+
+            <p>Permalink:</p>
             <p id="permalink"></p>
             <br>
             <p id="resultDesc"></p>

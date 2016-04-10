@@ -1,22 +1,21 @@
 /**
  * Given a source file, which tests touch it?
  */
-function query3() {
-    addSources();
+function prepareQuery3(param) {
+    addSources(param);    
+}
 
-    $("#select2").on('change', function (e) {
-        $("#resultTableBody").html("");
-        
-        var sourceFile = this.value;
-        if (sourceFile === '') return;
-        var buildRevision = $("#selectBuildRevision").val();
+function executeQuery3Manual() {
+    var select2 = $("#select2");
+    var sourceFile = select2.val();
+    if (sourceFile === '') return;
+    var buildRevision = $("#selectBuildRevision").val();
 
-        executeQuery3({
-            "eq":{
-                "source.file": sourceFile,
-                "build.revision": buildRevision
-            }
-        });
+    executeQuery3({
+        "eq":{
+            "source.file": sourceFile,
+            "build.revision": buildRevision
+        }
     });
 }
 

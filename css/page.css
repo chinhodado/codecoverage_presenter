@@ -1,0 +1,16 @@
+label {
+    display: block;
+}
+
+#permalink {
+    word-wrap: break-word;
+}
+
+#select2 {
+    width:100%;
+    max-width:100%;
+}
+
+#select2Filter {
+    width:100%;
+}

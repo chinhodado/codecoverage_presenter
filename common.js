@@ -1,4 +1,7 @@
-function addTests() {
+// global variables
+var usePermalinkFlag = false;
+
+function addTests(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
         var tests = yield (search({
@@ -14,19 +17,24 @@ function addTests() {
 
         $("#selectLabel2").text("Select a test:");
         $("#resultDesc").text("");
-        $("#select2").empty();
-        $("#select2").append("<option value=''></option>");
+        var select2 = $("#select2");
+        select2.empty();
 
         tests.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
         tests.data.forEach(function(element, index, array) {
-            $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>")
+            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>")
         });
+        select2.filterByText($("#select2Filter"), false);
+
+        if (param) {
+            select2.val(param.select2);
+        }
     });
 }
 
-function addSources() {
+function addSources(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
         var sources = yield (search({
@@ -42,19 +50,29 @@ function addSources() {
 
         $("#selectLabel2").text("Select a source file:");
         $("#resultDesc").text("");
-        $("#select2").empty();
-        $("#select2").append("<option value=''></option>");
+        var select2 = $("#select2");
+        select2.empty();
 
         sources.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
         sources.data.forEach(function(element, index, array) {
-            $("#select2").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
+        select2.filterByText($("#select2Filter"), false);
+
+        if (param) {
+            select2.val(param.select2);
+        }
     });
 }
 
-function addBuild() {
+/**
+ * Populate the list of build revisions
+ * @param buildRevision If set (e.g. coming from permalink), this will be used as the value
+ *                      of the select after populating it.
+ */
+function addBuild(buildRevision) {
     Thread.run(function*(){
         var sources = yield (search({
             "limit": 10000,
@@ -68,6 +86,10 @@ function addBuild() {
         sources.data.forEach(function(element, index, array) {
             $("#selectBuildRevision").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
         });
+
+        if (buildRevision) {
+            $("#selectBuildRevision").val(buildRevision);
+        }
     });
 }
 
@@ -79,17 +101,27 @@ function disableAll(isDisabled) {
     $("#selectBuildRevision").prop('disabled', isDisabled);
     $("#querySelect").prop('disabled', isDisabled);
     $("#select2").prop('disabled', isDisabled);
+    $("#submitButton").prop('disabled', isDisabled);
 }
 
 function showPermalink() {
-    var permalink = window.location.href + "?" + getUrlQueryString();
-    $("#permalink").text("Permalink: " + permalink);
+    var permalink = window.location.href.split('?')[0] + "?" + getUrlQueryString();
+    $("#permalink").text(permalink);
 }
 
 function getUrlQueryString() {
-    var buildRevision = $("#selectBuildRevision").val();
-    var query = $("#querySelect").val();
-    var select2 = $("#select2").val();
+    if (usePermalinkFlag) {
+        var buildRevision = getParameterByName("buildRevision");
+        var query = getParameterByName("query");
+        var select2 = getParameterByName("select2");
+        usePermalinkFlag = false;
+    }
+    else {
+        buildRevision = $("#selectBuildRevision").val();
+        query = $("#querySelect").val();
+        select2 = $("#select2").val();
+    }
+
     var param = {
         "buildRevision": buildRevision,
         "query": query,
@@ -118,10 +150,8 @@ function getParameterByName(name, url) {
 function processQuery(queryId, param, executeDirectly) {
     // TODO: clean up this ugly mess
     if (queryId == "1") {
-        if (!executeDirectly) {
-            query1();
-        }
-        else {
+        prepareQuery1(param);
+        if (executeDirectly) {
             executeQuery1({
                 "eq": {
                     "test.url": param.select2,
@@ -131,10 +161,8 @@ function processQuery(queryId, param, executeDirectly) {
         }
     }
     else if (queryId == "2") {
-        if (!executeDirectly) {
-            query2();
-        }
-        else {
+        prepareQuery2(param);
+        if (executeDirectly) {
             executeQuery2({
                 "eq": {
                     "test.url": param.select2,
@@ -144,10 +172,8 @@ function processQuery(queryId, param, executeDirectly) {
         }
     }
     else if (queryId == "3") {
-        if (!executeDirectly) {
-            query3();
-        }
-        else {
+        prepareQuery3(param);
+        if (executeDirectly) {
             executeQuery3({
                 "eq":{
                     "source.file": param.select2,
@@ -162,5 +188,20 @@ function processQuery(queryId, param, executeDirectly) {
 }
 
 function getDxrLink(fileName) {
-    return "https://dxr.mozilla.org/mozilla-central/search?q=" + fileName + "&redirect=false&case=false";
+    return "https://dxr.mozilla.org/mozilla-central/search?q=path%3A" + fileName + "&redirect=false&case=false";
+}
+
+function submitForm() {
+    $("#resultTableBody").html("");
+    var query = $("#querySelect").val();
+    
+    if (query == "1") {
+        executeQuery1Manual();
+    }
+    else if (query == "2") {
+        executeQuery2Manual();
+    }
+    else if (query == "3") {
+        executeQuery3Manual();
+    }
 }
