@@ -138,10 +138,27 @@ class QueryFilesOfTest extends Query {
     }
 }
 
-
+/**
+* This query can be used to find all the test files that access
+* a given test.
+*/
 class QueryTestsOfSource extends Query {
     constructor (testParams) {
         super(testParams);
+    }
+    
+    performQuery(callback){
+        var testToDo = this.testParameters;
+
+        search(
+          {
+              "limit": 10000,
+              "where": testToDo,
+              "groupby": ["test.url"],
+              "from": "coverage"
+          },
+          callback
+        );
     }
 }
 
