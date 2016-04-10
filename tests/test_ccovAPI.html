@@ -51,8 +51,16 @@
                 "test.url":"chrome://mochitests/content/browser/browser/components/places/tests/browser/"
         };
         
+        var params3 = {
+              "limit": 10000,
+              "where": params,
+              "groupby": ["source.file"],
+              "from": "coverage"
+        };
+        
         var query = new QueryFilesOfTest(params);
         var query2 = new QueryCommonFiles(params2);
+        var query3 = new QueryCustom(params3);
         
         ccov.setQuery(query);
         var results = ccov.getQueryResults(function(results) { 
@@ -65,6 +73,12 @@
             console.log("Complete.");
             console.log(results); 
         });
+        
+        ccov.setQuery(query3);
+        var results = ccov.getQueryResults(function(results) {
+            console.log("Complete.");
+            console.log(results);
+        })
 
 </script>
 </body>

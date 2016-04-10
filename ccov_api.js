@@ -221,6 +221,9 @@ class QueryCustom extends Query {
         super(testparams);
     }
     
-    performQuery () {
+    performQuery (callback) {
+        var testToDo = this.testParameters
+        
+        search(testToDo, callback);
     }
 }
