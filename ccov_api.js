@@ -1,4 +1,3 @@
-"use strict";
 /**
 *
 * This is the interface for all types of queries. It is used in JsonCcov
@@ -10,14 +9,16 @@
 */
 
 
-function Query() {
-}
-
-Query.prototype.performQuery = function (callback) {
+class Query {
+    constructor (testParams) {
+        this.testParameters = testParams
+    }
     
-    console.log("here");
-    return callback;
-};
+    performQuery (){ 
+        var x = {};
+        return x;
+    }
+}
 
 /**
 *
@@ -43,52 +44,56 @@ Query.prototype.performQuery = function (callback) {
 *
 */
 
-function JsonCcov() {
-    this.queryType = new Query();
-    this.queries = [];
-    this.result = {};
+class JsonCcov {
+    constructor () {
+        this.queryType = new Query();
+        this.queries = [];
+        this.result = {};
+    }
+
+    setQuery (queryTypeToDo) {
+        this.queryType = queryTypeToDo;
+    }
+
+    setQueries (queriesToDo) {
+        this.queries = queriesToDo;
+    }
+
+    storeResults (callback){
+        console.log("This next line is output once the query is finished. It has values in the object.")
+        console.log(this.result);
+        return callback;
+    }
+
+    _callBack (source){
+        console.log("Ended the query.");
+        return source;
+    }
+
+    getQueryResults (callback) {
+        console.log(this.queryType);
+        if (this.queries && !this.queryType) {
+            return {};
+        }
+
+        var queryDone = this.queryType;
+
+        queryDone.performQuery(callback);
+    }
+
+    getQueriesResults () {
+        if (!this.queries) {
+            return {};
+        }
+        var results = [];
+
+        this.queries.forEach(function (element, index) {
+            results.add(element.performQuery());
+        });
+
+        return results;
+    }
 }
-
-JsonCcov.prototype.setQuery = function (queryTypeToDo) {
-    this.queryType = queryTypeToDo;
-};
-
-JsonCcov.prototype.setQueries = function (queriesToDo) {
-    this.queries = queriesToDo;
-};
-
-JsonCcov.prototype.storeResults = function(callback){
-    console.log("This next line is output once the query is finished. It has values in the object.")
-    console.log(this.result);
-    return callback();
-};
-
-JsonCcov.prototype._callBack = function(source){
-    console.log("Ended the query.");
-    return source;
-};
-
-JsonCcov.prototype.getQueryResults = function (callback) {
-    console.log(this.queryType);
-    if (this.queries && !this.queryType) {
-        return {};
-    }
-    var queryDone = this.queryType;
-    return queryDone.performQuery(callback);
-};
-
-JsonCcov.prototype.getQueriesResults = function () {
-    if (!this.queries) {
-        return {};
-    }
-    var results = [];
-
-    this.queries.forEach(function (element, index) {
-        results.add(element.performQuery());
-    });
-
-    return results;
-};
 
 
 /**
@@ -113,34 +118,39 @@ var search = function(query, callback){
 * This query can be used to find all the source files that were accessed by
 * the given test.
 */
-function QueryFilesOfTest(test) {
-    Query.call(this);
-    this.testName = test;
-}
-QueryFilesOfTest.prototype = Object.create(Query.prototype);
-
-QueryFilesOfTest.prototype.performQuery = function (callback) {
-    var testToDo = this.testName;
-
-    search(
-      {
-          "limit": 10000,
-          "where": testToDo,
-          "groupby": ["source.file"],
-          "from": "coverage"
-      },
-      callback
-    );
-};
-
-
-function QueryCommonFiles(testParams) {
-    Query.call(this);
-    this.testParameters = testParams;
-}
-QueryCommonFiles.prototype = Object.create(Query.prototype);
+class QueryFilesOfTest extends Query {
+    constructor (testParams) {
+        super(testParams);
+    }
     
-QueryCommonFiles.prototype.performQuery = function (callback) {
+    performQuery (callback) {
+        var testToDo = this.testParameters;
+
+        search(
+          {
+              "limit": 10000,
+              "where": testToDo,
+              "groupby": ["source.file"],
+              "from": "coverage"
+          },
+          callback
+        );
+    }
+}
+
+
+class QueryTestsOfSource extends Query {
+    constructor (testParams) {
+        super(testParams);
+    }
+}
+
+class QueryCommonFiles extends Query {
+    constructor (testParams) {
+        super(testParams);
+    }
+    
+    performQuery (callback) {
         var testToDo = this.testParameters;
         
         var coverage = null; 
@@ -149,7 +159,7 @@ QueryCommonFiles.prototype.performQuery = function (callback) {
     
         search({
             "from":"coverage",
-            "where":testToDo,
+            "where": { prefix: testToDo },
             "groupby":[
                 {"name":"test", "value":"test.url"},
                 {"name":"source", "value":"source.file"}
@@ -181,7 +191,7 @@ QueryCommonFiles.prototype.performQuery = function (callback) {
         search(
             {
             "from":"coverage",
-            "where":testToDo,
+            "where": { prefix: testToDo },
             "edges":[
                 {"name":"source", "value":"source.file"},
                 {"name": "test", "value": "test.url", "allowNulls": false}
@@ -203,12 +213,14 @@ QueryCommonFiles.prototype.performQuery = function (callback) {
                 callback(commonSources);
             }
         );
+    }
 }
 
-
-function QueryCustom() {
+class QueryCustom extends Query {
+    constructor(testparams){
+        super(testparams);
+    }
+    
+    performQuery () {
+    }
 }
-QueryCustom.prototype = Object.create(Query.prototype);
-
-QueryCustom.prototype.performQuery = function () {
-};
