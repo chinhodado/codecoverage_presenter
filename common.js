@@ -57,7 +57,9 @@ function addSources(param) {
             return a[0].localeCompare(b[0]);
         });
         sources.data.forEach(function(element, index, array) {
-            select2.append("<option value='" + element[0] + "'>" + getShortenedFilePath(element[0]) + "</option>");
+            if (!isTest(element[0])) {
+                select2.append("<option value='" + element[0] + "'>" + getShortenedFilePath(element[0]) + "</option>");
+            }
         });
         select2.filterByText($("#select2Filter"), false);
 
@@ -201,6 +203,21 @@ function getShortenedFilePath(filePath) {
         var foo = filePath.split(prefix);
         return filePath.split(prefix)[1];
     }
+}
+
+function isTest(filePath) {
+    var testMasks = ["chrome://mochitests/",
+                     "chrome://specialpowers/",
+                     "chrome://mochikit/",
+                     "resource://testing-common/"];
+
+    for (var i = 0; i < testMasks.length; i++) {
+        if (filePath.indexOf(testMasks[i]) !== -1) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function submitForm() {

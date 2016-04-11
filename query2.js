@@ -63,12 +63,14 @@ function executeQuery2(where) {
         showPermalink();
         $("#resultDesc").text("Unique source files touched by selected test:");
 
-        siblings.data.forEach(function(element, index, array) {
+        siblings.data.forEach(function(element, index, array) {            
             if (element.tests.length > 0) return;
-            var tokens = element.source.split("/");
-            var sourceName = tokens[tokens.length - 1];
-            var dxrLink = getDxrLink(sourceName);
-            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + getShortenedFilePath(element.source) + "</a></td></tr>");
+            if (!isTest(element.source)) {
+                var tokens = element.source.split("/");
+                var sourceName = tokens[tokens.length - 1];
+                var dxrLink = getDxrLink(sourceName);
+                $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element.source + "</a></td></tr>");
+            }            
         });
 
         // re-enable the inputs
