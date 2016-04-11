@@ -40,7 +40,7 @@ function executeQuery1(where) {
             var tokens = element[0].split("/");
             var sourceName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(sourceName);
-            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
+            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + getShortenedFilePath(element[0]) + "</a></td></tr>");
         });
 
         showPermalink();

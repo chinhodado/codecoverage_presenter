@@ -24,7 +24,7 @@ function addTests(param) {
             return a[0].localeCompare(b[0]);
         });
         tests.data.forEach(function(element, index, array) {
-            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>")
+            select2.append("<option value='" + element[0] + "'>" + getShortenedFilePath(element[0]) + "</option>")
         });
         select2.filterByText($("#select2Filter"), false);
 
@@ -57,7 +57,7 @@ function addSources(param) {
             return a[0].localeCompare(b[0]);
         });
         sources.data.forEach(function(element, index, array) {
-            select2.append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+            select2.append("<option value='" + element[0] + "'>" + getShortenedFilePath(element[0]) + "</option>");
         });
         select2.filterByText($("#select2Filter"), false);
 
@@ -189,6 +189,18 @@ function processQuery(queryId, param, executeDirectly) {
 
 function getDxrLink(fileName) {
     return "https://dxr.mozilla.org/mozilla-central/search?q=path%3A" + fileName + "&redirect=false&case=false";
+}
+
+function getShortenedFilePath(filePath) {
+    var prefix = "chrome://mochitests/content/browser/";
+
+    if (filePath.indexOf(prefix) === -1) {
+        return filePath;
+    }
+    else {
+        var foo = filePath.split(prefix);
+        return filePath.split(prefix)[1];
+    }
 }
 
 function submitForm() {
