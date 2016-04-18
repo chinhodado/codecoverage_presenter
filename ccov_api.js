@@ -243,17 +243,13 @@ class QueryDXRFile extends Query{
         
         var tempArray = testToDo.split("/");
         
-        console.log(tempArray);
         var tempString = "";
         
         for(var i = 5; i < tempArray.length; i++){
             tempString += "/" + tempArray[i];
         }
         
-        console.log(tempString);
         var lineArr = tempString.split("#");
-        
-        console.log(lineArr);
         
         search(
             {
