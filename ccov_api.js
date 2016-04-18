@@ -130,7 +130,7 @@ class QueryFilesOfTest extends Query {
           {
               "limit": 10000,
               "where": testToDo,
-              "groupby": ["source.file"],
+              "groupby": ["source.file.name"],
               "from": "coverage"
           },
           callback
@@ -140,7 +140,7 @@ class QueryFilesOfTest extends Query {
 
 /**
 * This query can be used to find all the test files that access
-* a given test.
+* a given source files.
 */
 class QueryTestsOfSource extends Query {
     constructor (testParams) {
@@ -230,6 +230,109 @@ class QueryCommonFiles extends Query {
                 callback(commonSources);
             }
         );
+    }
+}
+
+class QueryRelevancyOfSources extends Query {
+    constructor(testparams){
+        super(testparams);
+    }
+    
+    performQuery (callback) {
+        var testToDo = this.testParameters
+        
+        var coverage = null;
+        
+        var relevancy = {
+            sourceFile: "",
+            relevancy: 0
+        }
+        
+        var relevancyArray = [ ];
+        
+        search(
+            {
+                "limit":10000,
+                "where":testToDo,
+                "groupby":["source.file.name","line"],
+                "from":"coverage.source.file.covered"
+            }
+            , function(coverage){
+                
+                search(
+                  {
+                      "limit": 10000,
+                      "groupby": ["test.url"],
+                      "from": "coverage"
+                  },
+                  function(totalTests){
+                      var prevSource = "";
+                      coverage.data.forEach(function(element, index, array){
+                          relevancy.sourceFile = element[0];
+                          var param = {
+                            "eq":{
+                                "source.file": relevancy.sourceFile,
+                                "line": element[1]
+                            }  
+                          };
+                          search(
+                                {
+                                    "count":["test.url"],
+                                    "from":"coverage.source.file.covered",
+                                    "where":{"and":[
+                                        {"missing":"source.method.name"},
+                                        {"eq":{
+                                            "source.file.name": relevancy.sourceFile,
+                                            "source.file.covered.line": element[1]
+                                        }}
+                                    ]},
+                                    "groupby":["test.url"]
+                                },
+                                function(testsTouched){
+                                    relevancy.sourceFile = element[0];
+                                    
+                                    console.log("element" + element[0]);
+                                    var count = testsTouched.data.length;
+                                    
+                                    var testsOverTotal = count/(totalTests.data.length);
+                                    
+                                    var relevance =  (1 - testsOverTotal)/(1 + testsOverTotal);
+                                    
+                                    if(prevSource != relevancy.sourceFile){
+                                        console.log("pushing" + index);
+                                        relevancyArray.push({
+                                            sourceFile: relevancy.sourceFile,
+                                            relevancy: relevance
+                                        });
+                                    }
+                                    else{
+                                        for(var i = 0; i < relevancyArray.length; i++){
+                                            if(relevancyArray[i].sourceFile == prevSource){
+                                                if(count == 1){
+                                                    relevancyArray[i].relevancy = 1;
+                                                }
+                                                if(relevance > relevancyArray[i].relevancy){
+                                                    relevancyArray[i].relevancy = relevance;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    console.log(prevSource + "\n" + relevancy.sourceFile);
+                                    prevSource = relevancy.sourceFile;
+                                    console.log(index);
+                                    console.log(array.length - 1);
+                                    if(index == array.length-1){
+                                        callback(relevancyArray);
+                                    }
+                                    
+                                }
+                          ); // End count
+                      }); // End coverage for each
+                  }// End total tests
+                );
+        }); // End coverage search
     }
 }
 

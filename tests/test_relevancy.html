@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ActiveData Code Coverage Query Tool</title>
+    <script src="../lib/jquery.js"></script>
+    <script src="../modevlib/imports/import.js"></script>
+    <script src="../common.js"></script>
+    <script src="../query1.js"></script>
+    <script src="../query2.js"></script>
+    <script src="../query3.js"></script>
+    <script src="../ccov_api.js"></script>
+    <script src="../modevlib/main.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/menu.css"/>
+</head>
+<body>
+    <div id="mainContent" style="width:80%; margin: 0 auto;">
+        <h2>ActiveData Code Coverage Query Tool</h2>
+        <p>Select a query:</p>
+        <select id="querySelect"></select>
+        <br><br>
+
+        <div id="step2" style="display: none">
+            <p id="selectLabel2">Select a test:</p>
+            <select id="select2"></select>
+            <br><br>
+
+            <p id="resultDesc"></p>
+            <div id="resultTable">
+                <table>
+                    <tbody id="resultTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script type="application/javascript">
+        
+        var ccov = new JsonCcov();
+        var test = "chrome://mochitests/content/browser/browser/base/content/test/chat/browser_focus.js";
+        var sourceFile = "resource://gre/modules/XPCOMUtils.jsm";
+        var buildRevision = "232db2940e992fe4c998dbb0a498703fbf463e0d";
+        
+        var params2 = {
+                "test.url":"chrome://mochitests/content/browser/browser/components/places/tests/browser/"
+        };
+        
+        var params3 = {
+              "limit": 10000,
+              "where": params,
+              "groupby": ["source.file.name"],
+              "from": "coverage"
+        };
+        
+        var params4 = {
+            "eq":{
+                "source.file": sourceFile,
+                "build.revision": buildRevision
+            }
+        };
+        
+        var params5 = {
+                "count":["test.url"],
+                "from":"coverage.source.file.covered",
+                "where":{"and":[
+                    {"missing":"source.method.name"},
+                    {"eq":{
+                        "source.file.name":"resource://gre/modules/RemotePageManager.jsm",
+                        "source.file.covered.line":318
+                    }}
+                ]},
+                "groupby":["test.url"]
+        };
+        
+        var params = {
+            "eq":{
+                "test.url": test,
+                "build.revision": buildRevision
+            }
+        };
+        
+        var query5 = new QueryCustom(params5);
+        var relevanceQuery = new QueryRelevancyOfSources(params);
+        
+        ccov.setQuery(relevanceQuery);
+        var results = ccov.getQueryResults(function(results) { 
+            console.log("Complete"); 
+            console.log(results);
+        });
+        
+</script>
+</body>
+</html>
