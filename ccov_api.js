@@ -233,6 +233,43 @@ class QueryCommonFiles extends Query {
     }
 }
 
+class QueryDXRFile extends Query{
+    constructor (testParams) {
+        super(testParams);
+    }
+    
+    performQuery(callback){
+        var testToDo = this.testParameters;
+        
+        var tempArray = testToDo.split("/");
+        
+        console.log(tempArray);
+        var tempString = "";
+        
+        for(var i = 5; i < tempArray.length; i++){
+            tempString += "/" + tempArray[i];
+        }
+        
+        console.log(tempString);
+        var lineArr = tempString.split("#");
+        
+        console.log(lineArr);
+        
+        search(
+            {
+                "from": "coverage.source.file.covered",
+                "limit": 10000,
+                "where": {
+                     "contains": { "source.file.name": lineArr[0] } 
+                },
+                "groupby": ["line"]
+               
+            },
+            callback
+        );
+    }
+}
+
 class QueryRelevancyOfSources extends Query {
     constructor(testparams){
         super(testparams);
