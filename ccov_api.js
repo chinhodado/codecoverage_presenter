@@ -266,6 +266,27 @@ class QueryDXRFile extends Query{
     }
 }
 
+
+/**
+* Returns a list of tests that should be run for the patch that is given to this class in a JSON format.
+* i.e. "http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h"
+**/
+class QueryTestsForPatch extends Query {
+    constructor (testParams) {
+        super(testParams);
+    }
+    
+    performQuery(callback){
+        var testToDo = this.testParameters;
+        
+        $.getJSON("http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h", function(jsonData){
+            console.log("obtained.");
+            console.log(jsonData);
+            callback(jsonData);
+        });
+    }
+}
+
 class QueryRelevancyOfSources extends Query {
     constructor(testparams){
         super(testparams);
