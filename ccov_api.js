@@ -13,8 +13,8 @@ class Query {
     constructor (testParams) {
         this.testParameters = testParams
     }
-    
-    performQuery (){ 
+
+    performQuery (){
         var x = {};
         return x;
     }
@@ -122,7 +122,7 @@ class QueryFilesOfTest extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters;
 
@@ -146,7 +146,7 @@ class QueryTestsOfSource extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
 
@@ -166,14 +166,14 @@ class QueryCommonFiles extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters;
-        
-        var coverage = null; 
+
+        var coverage = null;
         var sources_by_test={};
         var commonSources = null;
-    
+
         search({
             "from":"coverage",
             "where": { prefix: testToDo },
@@ -198,12 +198,12 @@ class QueryCommonFiles extends Query {
                     }else{
                         commonSources = commonSources.intersect(Map.keys(sourceList));
                     }//endif
-                }); 
-              } 
+                });
+              }
             );
-        
-        
-        
+
+
+
         var coverage;
         search(
             {
@@ -216,7 +216,7 @@ class QueryCommonFiles extends Query {
             "limit":10000,
             "format":"cube"
             },
-            function(coverage) { 
+            function(coverage) {
                 //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
                 var all_sources = coverage.edges[0].domain.partitions.select("value");
                 //DATA IS IN {"count": [source][test]} PIVOT TABLE
@@ -237,29 +237,29 @@ class QueryDXRFile extends Query{
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
-        
+
         var tempArray = testToDo.split("/");
-        
+
         var tempString = "";
-        
+
         for(var i = 5; i < tempArray.length; i++){
             tempString += "/" + tempArray[i];
         }
-        
+
         var lineArr = tempString.split("#");
-        
+
         search(
             {
                 "from": "coverage.source.file.covered",
                 "limit": 10000,
                 "where": {
-                     "contains": { "source.file.name": lineArr[0] } 
+                     "contains": { "source.file.name": lineArr[0] }
                 },
                 "groupby": ["line"]
-               
+
             },
             callback
         );
@@ -275,10 +275,10 @@ class QueryTestsForPatch extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
-        
+
         $.getJSON("http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h", function(jsonData){
             console.log("obtained.");
             console.log(jsonData);
@@ -291,19 +291,19 @@ class QueryRelevancyOfSources extends Query {
     constructor(testparams){
         super(testparams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters
-        
+
         var coverage = null;
-        
+
         var relevancy = {
             sourceFile: "",
             relevancy: 0
         }
-        
+
         var relevancyArray = [ ];
-        
+
         search(
             {
                 "limit":10000,
@@ -312,12 +312,13 @@ class QueryRelevancyOfSources extends Query {
                 "from":"coverage.source.file.covered"
             }
             , function(coverage){
-                
+
                 search(
                   {
                       "limit": 10000,
                       "groupby": ["test.url"],
-                      "from": "coverage"
+                      "from": "coverage",
+                      "limit":10000
                   },
                   function(totalTests){
                       var prevSource = "";
@@ -327,11 +328,11 @@ class QueryRelevancyOfSources extends Query {
                             "eq":{
                                 "source.file": relevancy.sourceFile,
                                 "line": element[1]
-                            }  
+                            }
                           };
                           search(
                                 {
-                                    "count":["test.url"],
+                                    "select":{"value":"test.url", "aggregate":"count"},
                                     "from":"coverage.source.file.covered",
                                     "where":{"and":[
                                         {"missing":"source.method.name"},
@@ -340,18 +341,20 @@ class QueryRelevancyOfSources extends Query {
                                             "source.file.covered.line": element[1]
                                         }}
                                     ]},
-                                    "groupby":["test.url"]
+                                    "groupby":["test.url"],
+                                    "format":"list",
+                                    "limit":10000
                                 },
                                 function(testsTouched){
                                     relevancy.sourceFile = element[0];
-                                    
+
                                     console.log("element" + element[0]);
                                     var count = testsTouched.data.length;
-                                    
+
                                     var testsOverTotal = count/(totalTests.data.length);
-                                    
+
                                     var relevance =  (1 - testsOverTotal)/(1 + testsOverTotal);
-                                    
+
                                     if(prevSource != relevancy.sourceFile){
                                         console.log("pushing" + index);
                                         relevancyArray.push({
@@ -372,7 +375,7 @@ class QueryRelevancyOfSources extends Query {
                                             }
                                         }
                                     }
-                                    
+
                                     console.log(prevSource + "\n" + relevancy.sourceFile);
                                     prevSource = relevancy.sourceFile;
                                     console.log(index);
@@ -380,7 +383,7 @@ class QueryRelevancyOfSources extends Query {
                                     if(index == array.length-1){
                                         callback(relevancyArray);
                                     }
-                                    
+
                                 }
                           ); // End count
                       }); // End coverage for each
@@ -394,10 +397,10 @@ class QueryCustom extends Query {
     constructor(testparams){
         super(testparams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters
-        
+
         search(testToDo, callback);
     }
 }
