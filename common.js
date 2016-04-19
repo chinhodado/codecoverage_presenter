@@ -78,15 +78,18 @@ function addBuild(buildRevision) {
     Thread.run(function*(){
         var sources = yield (search({
             "limit": 10000,
-            "groupby": ["build.revision"],
+            "format": "list",
+            "groupby": ["build.revision", "build.created_timestamp"],
             "from": "coverage"
         }));
 
         sources.data.sort(function(a, b) {
-            return a[0].localeCompare(b[0]);
+            return a.build.created_timestamp.localeCompare(b.build.created_timestamp);
         });
+
         sources.data.forEach(function(element, index, array) {
-            $("#selectBuildRevision").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+            var date = new Date(element.build.created_timestamp * 1000);
+            $("#selectBuildRevision").append("<option value='" + element.build.revision + "'>" + element.build.revision.substring(0, 12) + " (" + date + ")</option>");
         });
 
         if (buildRevision) {
