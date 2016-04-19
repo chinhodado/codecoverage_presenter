@@ -39,7 +39,7 @@ function addSources(param) {
     Thread.run(function*(){
         var sources = yield (search({
             "limit": 10000,
-            "groupby": ["source.file"],
+            "groupby": ["source.file.name"],
             "where" : {
                 "eq":{
                     "build.revision": buildRevision
@@ -181,7 +181,7 @@ function processQuery(queryId, param, executeDirectly) {
         if (executeDirectly) {
             executeQuery3({
                 "eq":{
-                    "source.file": param.select2,
+                    "source.file.name": param.select2,
                     "build.revision": param.buildRevision
                 }
             });

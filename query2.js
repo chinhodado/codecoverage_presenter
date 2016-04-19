@@ -29,7 +29,7 @@ function executeQuery2(where) {
             "from": "coverage",
             "where": where,
             "groupby": [
-                {"name": "source", "value": "source.file"}
+                {"name": "source", "value": "source.file.name"}
             ],
             "limit": 100000,
             "format": "list"
@@ -42,12 +42,12 @@ function executeQuery2(where) {
             "select": {"name": "tests", "value": "test.url", "aggregate": "union"},
             "where": {
                 "in": {
-                    "source.file": sources.data.select("source")
+                    "source.file.name": sources.data.select("source")
                 }
                 // TODO: do we need to specify build revision here?
             },
             "groupby": [
-                {"name": "source", "value": "source.file"}
+                {"name": "source", "value": "source.file.name"}
             ],
             "limit": 100000,
             "format": "list"

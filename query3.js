@@ -13,7 +13,7 @@ function executeQuery3Manual() {
 
     executeQuery3({
         "eq":{
-            "source.file": sourceFile,
+            "source.file.name": sourceFile,
             "build.revision": buildRevision
         }
     });
