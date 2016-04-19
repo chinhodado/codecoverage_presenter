@@ -23,7 +23,7 @@ function executeQuery1(where) {
     var query = {
         "limit": 10000,
         "where": where,
-        "groupby": ["source.file"],
+        "groupby": ["source.file.name"],
         "from": "coverage"
     };
 
