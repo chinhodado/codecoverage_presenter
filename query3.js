@@ -34,13 +34,17 @@ function executeQuery3(where) {
         testFiles.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
+
+        var table = "<table><tbody>";
         testFiles.data.forEach(function(element, index, array) {
             var tokens = element[0].split("/");
             var testName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(testName);
-            $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" +
+            table += ("<tr><td><a target='_blank' href='" + dxrLink + "'>" +
                 getShortenedFilePath(element[0]) + "</a></td></tr>");
         });
+        table += "</tbody></table>";
+        $("#resultDiv").html(table);
 
         showPermalink();
         $("#resultDesc").text("Tests that touch the selected source file:");

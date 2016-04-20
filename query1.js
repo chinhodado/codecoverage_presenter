@@ -36,14 +36,18 @@ function executeQuery1(where) {
         sourceFiles.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
+        
+        var table = "<table><tbody>";
         sourceFiles.data.forEach(function(element, index, array) {
             if (!isTest(element[0])) {
                 var tokens = element[0].split("/");
                 var sourceName = tokens[tokens.length - 1];
                 var dxrLink = getDxrLink(sourceName);
-                $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
+                table += ("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
             }            
         });
+        table += "</tbody></table>";
+        $("#resultDiv").html(table);
 
         showPermalink();
         $("#resultDesc").text("Source files touched by selected test:");

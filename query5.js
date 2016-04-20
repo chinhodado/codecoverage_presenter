@@ -42,15 +42,18 @@ function executeQuery5(where) {
         }));
 
         var data = testFiles.data;
-        $("#resultTableBody").append("<tr><td>Test</td><td>Coverage percentage by test</td></tr>");
+
+        var table = "<table><thead><tr><th>Test</th><th>Coverage percentage by test</th></tr></thead><tbody>";
         for (var i = 0; i < data["test.url"].length; i++) {
             var tokens = data["test.url"][i].split("/");
             var testName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(testName);
-            $("#resultTableBody").append("<tr>" +
+            table += ("<tr>" +
                 "<td><a target='_blank' href='" + dxrLink + "'>" + getShortenedFilePath(data["test.url"][i]) + "</a></td>" +
                 "<td>" + (+data["source.file.percentage_covered"][i] * 100).toFixed(2) + "%</td>" + "</tr>");
         }
+        table += "</tbody></table>";
+        $("#resultDiv").html(table);
 
         showPermalink();
         $("#resultDesc").text("Coverage detail for selected source file:");

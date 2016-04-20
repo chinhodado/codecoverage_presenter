@@ -253,7 +253,7 @@ function isTest(filePath) {
 }
 
 function submitForm() {
-    $("#resultTableBody").html("");
+    $("#resultDiv").html("");
     var query = $("#querySelect").val();
     
     if (query == "1") {
