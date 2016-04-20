@@ -38,7 +38,8 @@ function executeQuery5(where) {
                 "source.file.percentage_covered"
             ],
             "from": "coverage",
-            "where": where
+            "where": where,
+            "limit": 10000
         }));
 
         var data = testFiles.data;
