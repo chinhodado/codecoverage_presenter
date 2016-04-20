@@ -4,6 +4,9 @@ var usePermalinkFlag = false;
 function addTests(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var tests = yield (search({
             "limit": 10000,
             "groupby": ["test.url"],
@@ -31,12 +34,17 @@ function addTests(param) {
         if (param) {
             select2.val(param.select2);
         }
+
+        disableAll(false);
     });
 }
 
 function addSources(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var sources = yield (search({
             "limit": 10000,
             "groupby": ["source.file.name"],
@@ -66,6 +74,8 @@ function addSources(param) {
         if (param) {
             select2.val(param.select2);
         }
+
+        disableAll(false);
     });
 }
 
@@ -76,6 +86,9 @@ function addSources(param) {
  */
 function addBuild(buildRevision) {
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var sources = yield (search({
             "limit": 10000,
             "format": "list",
@@ -95,6 +108,8 @@ function addBuild(buildRevision) {
         if (buildRevision) {
             $("#selectBuildRevision").val(buildRevision);
         }
+
+        disableAll(false);
     });
 }
 
