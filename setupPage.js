@@ -20,7 +20,8 @@ function setupPage() {
         1: "Given a test, which files does it touch?",
         2: "Given a test, which unique files does it touch?",
         3: "Given a source file, which tests touch it?",
-        4: "Given a patch (list of source files and methods adjusted) recommend which tests I should run."
+        4: "Given a patch (list of source files and methods adjusted) recommend which tests I should run.",
+        5: "Given a source file show its coverage info."
     };
 
     var querySelect = $("#querySelect");

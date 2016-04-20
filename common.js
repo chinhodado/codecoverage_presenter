@@ -205,6 +205,20 @@ function processQuery(queryId, param, executeDirectly) {
     else if (queryId == "4") {
         alert("Not implemented yet!");
     }
+    else if (queryId == "5") {
+        prepareQuery5(param);
+        if (executeDirectly) {
+            executeQuery5({
+                "and":[
+                    {"missing": "source.method.name"},
+                    {"eq":{
+                        "source.file.name": param.select2,
+                        "build.revision": param.buildRevision
+                    }}
+                ]
+            });
+        }
+    }
 }
 
 function getDxrLink(fileName) {
@@ -250,5 +264,8 @@ function submitForm() {
     }
     else if (query == "3") {
         executeQuery3Manual();
+    }
+    else if (query == "5") {
+        executeQuery5Manual();
     }
 }
