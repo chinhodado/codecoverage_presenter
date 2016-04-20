@@ -44,17 +44,45 @@ function executeQuery5(where) {
 
         var data = testFiles.data;
 
-        var table = "<table><thead><tr><th>Test</th><th>Coverage percentage by test</th></tr></thead><tbody>";
-        for (var i = 0; i < data["test.url"].length; i++) {
+        // get set of lines covered by at least one test
+        var coveredSet = new Set();
+        for (let i = 0; i < data["source.file.covered"].length; i++) {
+            // avoid an array check
+            let covered = [].concat(data["source.file.covered"][i]);
+            for (let j = 0; j < covered.length; j++) {
+                coveredSet.add(covered[j].line);
+            }
+        }
+
+        // get set of lines isn't covered by any one test
+        var uncoveredSet = new Set();
+        for (let i = 0; i < data["source.file.uncovered"].length; i++) {
+            // avoid an array check
+            let uncovered = [].concat(data["source.file.uncovered"][i]);
+            for (let j = 0; j < uncovered.length; j++) {
+                if (!coveredSet.has(uncovered[j].line)) {
+                    uncoveredSet.add(uncovered[j].line);
+                }
+            }
+        }
+
+        var total_percentage = (coveredSet.size / (coveredSet.size + uncoveredSet.size) * 100).toFixed(2);
+        var total_pct_p = `<p>Total coverage percentage for all tests: ${total_percentage}%</p>`;
+
+        // table for percentage covered broken down by tests
+        var table = "<p>Broken down by tests: </p>" +
+            "<table><thead><tr><th>Test</th><th>Coverage percentage by test</th></tr></thead><tbody>";
+        for (let i = 0; i < data["test.url"].length; i++) {
             var tokens = data["test.url"][i].split("/");
             var testName = tokens[tokens.length - 1];
             var dxrLink = getDxrLink(testName);
             table += ("<tr>" +
-                "<td><a target='_blank' href='" + dxrLink + "'>" + getShortenedFilePath(data["test.url"][i]) + "</a></td>" +
-                "<td>" + (+data["source.file.percentage_covered"][i] * 100).toFixed(2) + "%</td>" + "</tr>");
+            "<td><a target='_blank' href='" + dxrLink + "'>" + getShortenedFilePath(data["test.url"][i]) + "</a></td>" +
+            "<td>" + (+data["source.file.percentage_covered"][i] * 100).toFixed(2) + "%</td>" + "</tr>");
         }
         table += "</tbody></table>";
-        $("#resultDiv").html(table);
+        var html = total_pct_p + table;
+        $("#resultDiv").html(html);
 
         showPermalink();
         $("#resultDesc").text("Coverage detail for selected source file:");
