@@ -63,7 +63,7 @@ function executeQuery2(where) {
         showPermalink();
         $("#resultDesc").text("Unique source files touched by selected test:");
 
-        var table = "<table><tbody>";
+        var table = "<table class='table table-condensed'><tbody>";
         siblings.data.forEach(function(element, index, array) {            
             if (element.tests.length > 0) return;
             if (!isTest(element.source)) {

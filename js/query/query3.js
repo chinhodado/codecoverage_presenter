@@ -35,7 +35,7 @@ function executeQuery3(where) {
             return a[0].localeCompare(b[0]);
         });
 
-        var table = "<table><tbody>";
+        var table = "<table class='table table-condensed'><tbody>";
         testFiles.data.forEach(function(element, index, array) {
             var tokens = element[0].split("/");
             var testName = tokens[tokens.length - 1];

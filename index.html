@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>ActiveData Code Coverage Query Tool</title>
     <script src="lib/jquery.js"></script>
+
     <script src="js/filterByText.js"></script>
     <script src="modevlib/imports/import.js"></script>
     <script src="js/common.js"></script>
@@ -12,27 +13,30 @@
     <script src="js/query/query3.js"></script>
     <script src="js/query/query5.js"></script>
     <script src="js/setupPage.js"></script>
-    <link type="text/css" rel="stylesheet" href="css/menu.css"/>
-    <link type="text/css" rel="stylesheet" href="css/page.css"/>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/page.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div id="mainContent" style="width:80%; margin: 0 auto;">
         <h2>ActiveData Code Coverage Query Tool</h2>
         <label for="selectBuildRevision">Select a build revision</label>
-        <select id="selectBuildRevision" size="5"></select>
+        <select id="selectBuildRevision" class="form-control" size="5"></select>
         <br><br>
 
         <label for="querySelect">Select a query:</label>
-        <select id="querySelect" size="5"></select>
+        <select id="querySelect" class="form-control" size="5"></select>
         <br><br>
 
         <div id="step2" style="display: none">
             <label id="selectLabel2" for="select2"></label>
-            <input type="text" title="Filter file" id="select2Filter"><br>
-            <select id="select2" size="10"></select>
+            <input type="text" class="form-control" title="Filter file" id="select2Filter"><br>
+            <select id="select2" class="form-control" size="10"></select>
             <br><br>
 
-            <input id="submitButton" type="submit" value="Run query" onclick="submitForm()">
+            <input id="submitButton" class="btn btn-success" type="submit" value="Run query" onclick="submitForm()">
             <br><br>
 
             <p>Permalink:</p>

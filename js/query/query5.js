@@ -71,7 +71,7 @@ function executeQuery5(where) {
 
         // table for percentage covered broken down by tests
         var table = "<p>Broken down by tests: </p>" +
-            "<table><thead><tr><th>Test</th><th>Coverage percentage by test</th></tr></thead><tbody>";
+            "<table class='table table-condensed'><thead><tr><th>Test</th><th>Coverage percentage by test</th></tr></thead><tbody>";
         for (let i = 0; i < data["test.url"].length; i++) {
             var tokens = data["test.url"][i].split("/");
             var testName = tokens[tokens.length - 1];
