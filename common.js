@@ -227,12 +227,14 @@ function getDxrLink(fileName) {
 
 /**
  * Heuristically get a dxr link for a file
- * @param fileName
- * @param callbackDone
- * @param callbackNotUnique
+ * @param fileName The file name to search on dxr
+ * @param callbackDone Will be called when a direct dxr link is obtained, with the link passed in as a parameter
+ * @param callbackNotUnique Will be called when there are more than one result when searching for fileName on dxr,
+ * the results will be passed in as a parameter
  */
 function getSingleDxrLink(fileName, callbackDone, callbackNotUnique) {
     // Trung: temporarily using my server since dxr doesn't support cross domain request
+    // TODO: add handle for error, for no result, etc.
     var link = "http://bloodbrothers-chinhodado.rhcloud.com/getDxr/?file=" + fileName;
     $.ajax({
         url: link,
@@ -242,9 +244,10 @@ function getSingleDxrLink(fileName, callbackDone, callbackNotUnique) {
             data = JSON.parse(data);
             var results = data.results;
             if (results.length > 1) {
-                callbackNotUnique();
+                callbackNotUnique(results);
             }
 
+            // in the event that there are multiple results for the file, just take the first one
             var chosenLink = "https://dxr.mozilla.org/mozilla-central/source/" + results[0].path;
             callbackDone(chosenLink);
         }

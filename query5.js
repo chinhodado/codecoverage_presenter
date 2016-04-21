@@ -92,14 +92,15 @@ function executeQuery5(where) {
         tokens = source.split("/");
         var sourceName = tokens[tokens.length - 1];
         getSingleDxrLink(sourceName, function(link) {
-            console.log(link);
             var postfix = Array.from(coveredSet).join(",");
             var finalLink = link + "#" + postfix;
             var p = `<p>View source on DXR with covered lines highlighted: <a href="${finalLink}">Link</a></p>`;
             $("#resultDiv").prepend(p);
         },
-        function() {
-            console.log("not unique!");
+        function(results) {
+            var warn = `<p>WARNING: there are multiple result when searching for ${source} on dxr. 
+                        Using the first result, but it may not be accurate!</p>`;
+            $("#resultDiv").prepend(warn);
         });
 
         // re-enable the inputs
