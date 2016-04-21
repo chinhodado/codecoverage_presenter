@@ -225,6 +225,32 @@ function getDxrLink(fileName) {
     return "https://dxr.mozilla.org/mozilla-central/search?q=path%3A" + fileName + "&redirect=false&case=false";
 }
 
+/**
+ * Heuristically get a dxr link for a file
+ * @param fileName
+ * @param callbackDone
+ * @param callbackNotUnique
+ */
+function getSingleDxrLink(fileName, callbackDone, callbackNotUnique) {
+    // Trung: temporarily using my server since dxr doesn't support cross domain request
+    var link = "http://bloodbrothers-chinhodado.rhcloud.com/getDxr/?file=" + fileName;
+    $.ajax({
+        url: link,
+        type: "GET",
+        crossDomain: true,
+        success: function(data){
+            data = JSON.parse(data);
+            var results = data.results;
+            if (results.length > 1) {
+                callbackNotUnique();
+            }
+
+            var chosenLink = "https://dxr.mozilla.org/mozilla-central/source/" + results[0].path;
+            callbackDone(chosenLink);
+        }
+    });
+}
+
 function getShortenedFilePath(filePath) {
     var prefix = "chrome://mochitests/content/browser/";
 

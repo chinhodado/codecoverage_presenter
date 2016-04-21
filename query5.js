@@ -87,6 +87,21 @@ function executeQuery5(where) {
         showPermalink();
         $("#resultDesc").text("Coverage detail for selected source file:");
 
+        // dxr
+        var source = data["source.file.name"][0];
+        tokens = source.split("/");
+        var sourceName = tokens[tokens.length - 1];
+        getSingleDxrLink(sourceName, function(link) {
+            console.log(link);
+            var postfix = Array.from(coveredSet).join(",");
+            var finalLink = link + "#" + postfix;
+            var p = `<p>View source on DXR with covered lines highlighted: <a href="${finalLink}">Link</a></p>`;
+            $("#resultDiv").prepend(p);
+        },
+        function() {
+            console.log("not unique!");
+        });
+
         // re-enable the inputs
         disableAll(false);
     });
