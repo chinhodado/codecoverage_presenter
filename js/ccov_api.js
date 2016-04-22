@@ -292,7 +292,8 @@ class QueryTestsForPatch extends Query {
             search(
                 {
                     "from":"coverage",
-                    "where":{"contains":{"source.file.name":"browser-places.js"}},
+                    "where":{"contains":{"source.file.name":temp2[temp2.length-1]}},
+                    "limit":10000,
                     "groupby":["test.url","source.file.name"]
                 }, function(tests){
                     callback(tests);
