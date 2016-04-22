@@ -233,6 +233,11 @@ class QueryCommonFiles extends Query {
     }
 }
 
+/**
+* This query can take a DXR link such as "https://dxr.mozilla.org/mozilla-central/source/browser/base/content/test/chat/browser_focus.js#13"
+* and parse it for the source file and return the lines that are covered within it. It works based on the ASSUMPTION that there are always
+* two fields after "dxr.mozilla.org" and before the source file name.
+**/
 class QueryDXRFile extends Query{
     constructor (testParams) {
         super(testParams);
@@ -279,10 +284,19 @@ class QueryTestsForPatch extends Query {
     performQuery(callback){
         var testToDo = this.testParameters;
         
-        $.getJSON("http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h", function(jsonData){
-            console.log("obtained.");
-            console.log(jsonData);
-            callback(jsonData);
+        $.getJSON(testToDo, function(jsonData){
+            var temp = jsonData['path'];
+            var temp2 = temp.split('/');
+            var tests = null;
+            
+            search(
+                {
+                    "from":"coverage",
+                    "where":{"contains":{"source.file.name":"browser-places.js"}},
+                    "groupby":["test.url","source.file.name"]
+                }, function(tests){
+                    callback(tests);
+                });
         });
     }
 }
