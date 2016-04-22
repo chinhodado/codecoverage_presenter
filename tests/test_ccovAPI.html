@@ -44,25 +44,25 @@
         var params = {
             "eq":{
                 "test.url": test,
-                "build.revision": buildRevision
+               // "build.revision": buildRevision
             }
         };
         
         var params2 = {
-                "test.url":"chrome://mochitests/content/browser/browser/components/places/tests/browser/"
+                "test.url":"chrome://mochitests/content/"
         };
         
         var params3 = {
               "limit": 10000,
               "where": params,
-              "groupby": ["source.file"],
+              "groupby": ["source.file.name"],
               "from": "coverage"
         };
         
         var params4 = {
             "eq":{
-                "source.file": sourceFile,
-                "build.revision": buildRevision
+                "source.file.name": sourceFile,
+               // "build.revision": buildRevision
             }
         };
         

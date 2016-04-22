@@ -179,7 +179,7 @@ class QueryCommonFiles extends Query {
             "where": { prefix: testToDo },
             "groupby":[
                 {"name":"test", "value":"test.url"},
-                {"name":"source", "value":"source.file"}
+                {"name":"source", "value":"source.file.name"}
             ],
             "limit":10000,
             "format":"list"
@@ -210,7 +210,7 @@ class QueryCommonFiles extends Query {
             "from":"coverage",
             "where": { prefix: testToDo },
             "edges":[
-                {"name":"source", "value":"source.file"},
+                {"name":"source", "value":"source.file.name"},
                 {"name": "test", "value": "test.url", "allowNulls": false}
             ],
             "limit":10000,
