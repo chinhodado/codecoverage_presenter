@@ -20,6 +20,8 @@ function executeQuery2Manual() {
 }
 
 function executeQuery2(where) {
+    showBuildInfo(where.eq["build.revision"]);
+    
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);

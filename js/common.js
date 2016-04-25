@@ -113,6 +113,25 @@ function addBuild(buildRevision) {
     });
 }
 
+function showBuildInfo(buildRevision) {
+    if (!buildRevision) return;
+
+    Thread.run(function*(){
+        var result = yield (search({
+            "limit":1,
+            "format":"list",
+            "select":["build.revision","build.created_timestamp","build.taskId"],
+            "from":"coverage",
+            "where":{"eq":{"build.revision":buildRevision}}
+        }));
+
+        var taskId = result.data[0].build.taskId;
+        var url = `https://tools.taskcluster.net/task-inspector/#${taskId}/`;
+        $("#buildInfo").html(`Build taskId: <a href="${url}">${taskId}</a>`);
+        $("#buildInfoDiv").show();
+    });
+}
+
 /**
  * Disable or enable all inputs
  * @param isDisabled true to disable all, false to enable all
