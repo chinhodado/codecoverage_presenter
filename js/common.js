@@ -97,7 +97,7 @@ function addBuild(buildRevision) {
         }));
 
         sources.data.sort(function(a, b) {
-            return a.build.created_timestamp.localeCompare(b.build.created_timestamp);
+            return b.build.created_timestamp - a.build.created_timestamp;
         });
 
         sources.data.forEach(function(element, index, array) {
