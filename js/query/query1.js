@@ -1,5 +1,5 @@
 /**
- * Given a test, which files does it touch?
+ * Given a test, which files does it touch and what is the relevancy?
  */
 function prepareQuery1(param) {
     addTests(param);
@@ -21,10 +21,20 @@ function executeQuery1Manual() {
 
 function executeQuery1(where) {
     var query = {
+        "from": "coverage",
+        "where": {
+            "and": [
+                where,
+                {"missing": "source.method.name"}
+            ]
+        },
         "limit": 10000,
-        "where": where,
-        "groupby": ["source.file.name"],
-        "from": "coverage"
+        "select": {
+            "name": "max_score",
+            "value": "source.file.score",
+            "aggregate": "maximum"
+        },
+        "groupby": ["source.file.name"]
     };
 
     Thread.run(function*(){
@@ -36,15 +46,15 @@ function executeQuery1(where) {
         sourceFiles.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
-        
-        var table = "<table><tbody class='table table-condensed'>";
+
+        var table = "<table class='table table-condensed'><thead><tr><th>Source file</th><th>Relevancy</th></tr></thead><tbody>";
         sourceFiles.data.forEach(function(element, index, array) {
             if (!isTest(element[0])) {
                 var tokens = element[0].split("/");
                 var sourceName = tokens[tokens.length - 1];
                 var dxrLink = getDxrLink(sourceName);
-                table += ("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
-            }            
+                table += ("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td><td>" + element[1] + "</td></tr>");
+            }
         });
         table += "</tbody></table>";
         $("#resultDiv").html(table);

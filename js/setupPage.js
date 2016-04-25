@@ -17,7 +17,7 @@ function setupPage() {
 
     // populate the query select
     var queryList = {
-        1: "Given a test, which files does it touch?",
+        1: "Given a test, which files does it touch and what is the relevancy?",
         2: "Given a test, which unique files does it touch?",
         3: "Given a source file, which tests touch it?",
         4: "Given a patch (list of source files and methods adjusted) recommend which tests I should run.",
