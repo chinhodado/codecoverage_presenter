@@ -1,3 +1,5 @@
+importScript("../modevlib/rest/Rest.js");
+
 /**
 *
 * This is the interface for all types of queries. It is used in JsonCcov
@@ -105,6 +107,14 @@ class JsonCcov {
 
 
 
+var search = function* (query){
+    var output = yield (Rest.post({
+            url: "https://activedata.allizom.org/query",
+            json: query
+        }));
+        yield (output);
+};
+
 var search = function(query, callback){
     $.ajax("https://activedata.allizom.org/query", {
         type: "POST",
@@ -113,6 +123,18 @@ var search = function(query, callback){
     });
 };
 
+function* queryFilesOfTest(testParams){
+    var testToDo = testParams;
+    
+    var sourceFiles = yield (search({
+         "limit": 10000,
+         "where": {"eq": testToDo},
+         "groupby": ["source.file.name"],
+         "from": "coverage"
+     }));
+ 
+     yield (sourceFiles);
+}
 
 /**
 * This query can be used to find all the source files that were accessed by
@@ -138,6 +160,19 @@ class QueryFilesOfTest extends Query {
     }
 }
 
+function* queryTestsOfSource(testParams){
+    var testToDo = testParams;
+    
+    var sourceFiles = yield (search({
+              "limit": 10000,
+              "where": { "eq": testToDo},
+              "groupby": ["test.url"],
+              "from": "coverage"
+     }));
+ 
+     yield (sourceFiles);
+}
+
 /**
 * This query can be used to find all the test files that access
 * a given source files.
@@ -160,6 +195,62 @@ class QueryTestsOfSource extends Query {
           callback
         );
     }
+}
+
+function* queryCommonFiles(testParams){
+        var testToDo = this.testParams;
+    
+        var coverage = yield (search({
+            "from":"coverage",
+            "where":{"prefix": testToDo},
+            "groupby":[
+                {"name":"test", "value":"test.url"},
+                {"name":"source", "value":"source.file.name"}
+            ],
+            "limit":10000,
+            "format":"list"
+        }));
+    
+        console.log(coverage);
+        //MAP EACH TEST TO THE SET OF FILES COVERED
+        var sources_by_test={};
+        coverage.data.forall(function(d, i){
+            sources_by_test[d.test] = coalesce(sources_by_test[d.test], {});
+            sources_by_test[d.test][d.source]=true;  // USE THE KEYS OF THE OBJECT AS SET
+        });
+        //FIND THE INTERSECTION OF COVERED FILES
+        var commonSources = null;
+        Map.forall(sources_by_test, function(test, sourceList){
+            if (commonSources==null) {
+                commonSources = Map.keys(sourceList);
+            }else{
+                commonSources = commonSources.intersect(Map.keys(sourceList));
+            }//endif
+        });
+    
+        var coverage = yield (search({
+            "from":"coverage",
+            "where":{"prefix": testToDo},
+            "edges":[
+                {"name":"source", "value":"source.file.name"},
+                {"name": "test", "value": "test.url", "allowNulls": false}
+            ],
+            "limit":10000,
+            "format":"cube"
+        }));
+        console.log(coverage);
+        //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
+        var all_sources = coverage.edges[0].domain.partitions.select("value");
+        //DATA IS IN {"count": [source][test]} PIVOT TABLE
+        var commonSources=[];
+        coverage.data.count.forall(function(tests, i){
+            //VERIFY THIS source TOUCHES ALL TESTS (count>0)
+            if (Array.AND(tests.map(function(v){return v>0;}))) {
+                commonSources.append(all_sources[i]);
+            }//endif
+        });
+    
+        yield(commonSources);
 }
 
 class QueryCommonFiles extends Query {
@@ -275,6 +366,7 @@ class QueryDXRFile extends Query{
 /**
 * Returns a list of tests that should be run for the patch that is given to this class in a JSON format.
 * i.e. "http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h"
+* TODO: Use lines covered in each test to determine tests to run.
 **/
 class QueryTestsForPatch extends Query {
     constructor (testParams) {

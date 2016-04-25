@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ActiveData Code Coverage Query Tool</title>
+    <script src="../lib/jquery.js"></script>
+    <script src="../modevlib/imports/import.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/query/query1.js"></script>
+    <script src="../js/query/query2.js"></script>
+    <script src="../js/query/query3.js"></script>
+    <script src="../js/ccov_api.js"></script>
+    <script src="../modevlib/main.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/menu.css"/>
+</head>
+<body>
+    <div id="mainContent" style="width:80%; margin: 0 auto;">
+        <h2>ActiveData Code Coverage Query Tool</h2>
+        <p>Select a query:</p>
+        <select id="querySelect"></select>
+        <br><br>
+
+        <div id="step2" style="display: none">
+            <p id="selectLabel2">Select a test:</p>
+            <select id="select2"></select>
+            <br><br>
+
+            <p id="resultDesc"></p>
+            <div id="resultDiv">
+                <table>
+                    <tbody id="resultTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script type="application/javascript">
+        var test = "chrome://mochitests/content/browser/browser/base/content/test/chat/browser_focus.js";
+        var sourceFile = "resource://gre/modules/XPCOMUtils.jsm";
+        var buildRevision = "232db2940e992fe4c998dbb0a498703fbf463e0d";
+        
+        importScript(
+         ["../modevlib/threads/thread.js", "../ccov_api_usingThread.js"],
+         function(){
+             Thread.run(function*(){
+                 var params2 = {
+                     "test.url":test
+                 };
+                 var results = yield (queryFilesOfTest(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+             
+             Thread.run(function*(){
+                 var params2 = {
+                     "source.file.name": sourceFile
+                 };
+                 var results = yield (queryTestsOfSource(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+             
+             Thread.run(function*(){
+                 var params2 = {
+                     "test.url":"chrome://mochitests/content/"
+                 };
+                 var results = yield (queryCommonFiles(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+         }
+        );
+        
+        
+</script>
+</body>
+</html>
