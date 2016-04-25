@@ -19,8 +19,8 @@ function executeQuery3Manual() {
     });
 }
 
-function executeQuery3(where) {
-    showBuildInfo(where.eq["build.revision"]);
+function executeQuery3(filter) {
+    showBuildInfo(filter.eq["build.revision"]);
     
     Thread.run(function*(){
         // disable inputs while query is running
@@ -28,7 +28,7 @@ function executeQuery3(where) {
 
         var testFiles = yield (search({
             "limit": 10000,
-            "where": where,
+            "where": filter,
             "groupby": ["test.url"],
             "from": "coverage"
         }));

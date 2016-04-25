@@ -19,14 +19,14 @@ function executeQuery1Manual() {
     });
 }
 
-function executeQuery1(where) {
-    showBuildInfo(where.eq["build.revision"]);
+function executeQuery1(filter) {
+    showBuildInfo(filter.eq["build.revision"]);
     
     var query = {
         "from": "coverage",
         "where": {
             "and": [
-                where,
+                filter,
                 {"missing": "source.method.name"}
             ]
         },

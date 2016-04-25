@@ -12,17 +12,16 @@ function executeQuery5Manual() {
     var buildRevision = $("#selectBuildRevision").val();
 
     executeQuery5({
-        "and":[
-            {"missing": "source.method.name"},
-            {"eq":{
-                "source.file.name": sourceFile,
-                "build.revision": buildRevision
-            }}
-        ]
+        "eq":{
+            "source.file.name": sourceFile,
+            "build.revision": buildRevision
+        }
     });
 }
 
-function executeQuery5(where) {
+function executeQuery5(filter) {
+    showBuildInfo(filter.eq["build.revision"]);
+    
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
@@ -38,7 +37,12 @@ function executeQuery5(where) {
                 "source.file.percentage_covered"
             ],
             "from": "coverage",
-            "where": where,
+            "where": {
+                "and":[
+                    {"missing": "source.method.name"},
+                    filter
+                ]
+            },
             "limit": 10000
         }));
 

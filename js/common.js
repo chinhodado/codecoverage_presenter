@@ -228,13 +228,10 @@ function processQuery(queryId, param, executeDirectly) {
         prepareQuery5(param);
         if (executeDirectly) {
             executeQuery5({
-                "and":[
-                    {"missing": "source.method.name"},
-                    {"eq":{
-                        "source.file.name": param.select2,
-                        "build.revision": param.buildRevision
-                    }}
-                ]
+                "eq":{
+                    "source.file.name": param.select2,
+                    "build.revision": param.buildRevision
+                }
             });
         }
     }

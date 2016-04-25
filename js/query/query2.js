@@ -19,8 +19,8 @@ function executeQuery2Manual() {
     });
 }
 
-function executeQuery2(where) {
-    showBuildInfo(where.eq["build.revision"]);
+function executeQuery2(filter) {
+    showBuildInfo(filter.eq["build.revision"]);
     
     Thread.run(function*(){
         // disable inputs while query is running
@@ -29,7 +29,7 @@ function executeQuery2(where) {
         // get source files covered by test
         var sources = yield (search({
             "from": "coverage",
-            "where": where,
+            "where": filter,
             "groupby": [
                 {"name": "source", "value": "source.file.name"}
             ],
@@ -57,7 +57,7 @@ function executeQuery2(where) {
         siblings.data = qb.sort(siblings.data, "tests.length");
 
         // remove self
-        var test = where.eq["test.url"];
+        var test = filter.eq["test.url"];
         siblings.data.forall(function(v){
             v.tests.remove(test);
         });
