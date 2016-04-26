@@ -367,6 +367,9 @@ class QueryDXRFile extends Query{
 * Returns a list of tests that should be run for the patch that is given to this class in a JSON format.
 * i.e. "http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h"
 *
+* To deal with multiple files of the same name, we search for only the name of the actual file and disregard the path.
+* TODO: Add path testing. Solution: Start from the longest substring and move to the shortest until we have a non-empty result.
+*
 * To get the json-diff first go to the diff for the given file of a patch on "hg.mozilla.org".
 * Then, you should have a link like:
 * "http://hg.mozilla.org/mozilla-central/diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h".
@@ -378,10 +381,6 @@ class QueryDXRFile extends Query{
 class QueryTestsForPatch extends Query {
     constructor (testParams) {
         super(testParams);
-    }
-    
-    searchForTests(callback){
-        
     }
     
     performQuery(callback){
@@ -406,7 +405,7 @@ class QueryTestsForPatch extends Query {
 }
 
 /**
-* Query for a set of patches. TODO: Testing.
+* Query for a set of patches. It depends upon QueryTestsForPatch. TODO: Testing.
 */
 class QuerySetTestForPatch extends Query {
     constructor (testParams) {
