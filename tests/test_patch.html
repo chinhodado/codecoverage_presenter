@@ -44,9 +44,18 @@
         
         var params = "http://hg.mozilla.org/mozilla-central/json-diff/0cc6001ba6f4/browser/base/content/browser-places.js";
         
+        var paramsArray = ["http://hg.mozilla.org/mozilla-central/json-diff/0cc6001ba6f4/browser/base/content/browser-places.js"
+                           ];
+        
         var patchQuery = new QueryTestsForPatch(params);
         
         ccov.setQuery(patchQuery);
+        var results = ccov.getQueryResults(function(results) { 
+            console.log("Complete"); 
+            console.log(results);
+        });
+        
+        ccov.setQuery(patchQuerySet);
         var results = ccov.getQueryResults(function(results) { 
             console.log("Complete"); 
             console.log(results);

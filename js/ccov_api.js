@@ -366,11 +366,22 @@ class QueryDXRFile extends Query{
 /**
 * Returns a list of tests that should be run for the patch that is given to this class in a JSON format.
 * i.e. "http://hg.mozilla.org/mozilla-central/json-diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h"
+*
+* To get the json-diff first go to the diff for the given file of a patch on "hg.mozilla.org".
+* Then, you should have a link like:
+* "http://hg.mozilla.org/mozilla-central/diff/14eb89c4134db16845dedf5fddd2fb0a7f70497f/tools/profiler/core/platform.h".
+* Replace 'diff' with 'json-diff' and the result should be the diff in the form of a json that can be parsed with this
+* query.
+*
 * TODO: Use lines covered in each test to determine tests to run.
 **/
 class QueryTestsForPatch extends Query {
     constructor (testParams) {
         super(testParams);
+    }
+    
+    searchForTests(callback){
+        
     }
     
     performQuery(callback){
@@ -391,6 +402,35 @@ class QueryTestsForPatch extends Query {
                     callback(tests);
                 });
         });
+    }
+}
+
+/**
+* Query for a set of patches. TODO: Testing.
+*/
+class QuerySetTestForPatch extends Query {
+    constructor (testParams) {
+        super(testParams);
+    }
+    
+    performQuery(callback){
+        var testSet = this.testParameters;
+        var ccov2 = new JsonCcov();
+        var resultSet = [];
+        
+        (function(){
+            testSet.forEach(funtion(testToDo){
+                var patch = new QueryTestsForPatch(testToDo);
+                ccov2.setQuery(patch);
+
+                var results = ccov2.performQuery(function(result){
+                    result.forEach(function(test){
+                        resultSet.append(test);
+                    });
+                })
+            });
+        })();
+        callback(resultSet);
     }
 }
 
