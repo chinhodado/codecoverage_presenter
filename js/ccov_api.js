@@ -328,6 +328,8 @@ class QueryCommonFiles extends Query {
 * This query can take a DXR link such as "https://dxr.mozilla.org/mozilla-central/source/browser/base/content/test/chat/browser_focus.js#13"
 * and parse it for the source file and return the lines that are covered within it. It works based on the ASSUMPTION that there are always
 * two fields after "dxr.mozilla.org" and before the source file name.
+*
+* TODO: Make it work in such a way that all substrings are checked.
 **/
 class QueryDXRFile extends Query{
     constructor (testParams) {
