@@ -374,6 +374,7 @@ class QueryDXRFile extends Query{
 * Replace 'diff' with 'json-diff' and the result should be the diff in the form of a json that can be parsed with this
 * query.
 *
+* TODO: Relevancy of the tests.
 * TODO: Use lines covered in each test to determine tests to run.
 **/
 class QueryTestsForPatch extends Query {
