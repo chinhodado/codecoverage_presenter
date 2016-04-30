@@ -444,10 +444,10 @@ class QuerySetTestForPatch extends Query {
 
                 var results = ccov2.getQueryResults(function(result){
                         resultSet.append(result);
+                        callback(resultSet);
                 });
             });
         })();
-        callback(resultSet);
     }
 }
 
