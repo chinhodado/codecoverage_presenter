@@ -327,7 +327,8 @@ class QueryCommonFiles extends Query {
 /**
 * This query can take a DXR link such as "https://dxr.mozilla.org/mozilla-central/source/browser/base/content/test/chat/browser_focus.js#13"
 * and parse it for the source file and return the lines that are covered within it. It works based on the ASSUMPTION that there are always
-* two fields after "dxr.mozilla.org" and before the source file name.
+* two fields after "dxr.mozilla.org" and before the source file name. Currently though, it only checks the source file name and excludes the path.
+* This query returns an object containing the test url, the source file name, and the lines that are covered using that test.
 *
 * TODO: Make it work in such a way that all substrings are checked.
 **/
@@ -341,22 +342,17 @@ class QueryDXRFile extends Query{
         
         var tempArray = testToDo.split("/");
         
-        var tempString = "";
-        
-        for(var i = 5; i < tempArray.length; i++){
-            tempString += "/" + tempArray[i];
-        }
-        
-        var lineArr = tempString.split("#");
-        
+        var fileTemp = tempArray[tempArray.length-1];
+        var fileArr = fileTemp.split("#");
+            
         search(
             {
                 "from": "coverage.source.file.covered",
                 "limit": 10000,
                 "where": {
-                     "contains": { "source.file.name": lineArr[0] } 
+                     "contains": { "source.file.name": fileArr[0] } 
                 },
-                "groupby": ["line"]
+                "groupby": ["test.url", "source.file.name", "line"]
                
             },
             callback
@@ -420,7 +416,7 @@ class QuerySetTestForPatch extends Query {
         var resultSet = [];
         
         (function(){
-            testSet.forEach(funtion(testToDo){
+            testSet.forEach(function(testToDo){
                 var patch = new QueryTestsForPatch(testToDo);
                 ccov2.setQuery(patch);
 
@@ -428,7 +424,7 @@ class QuerySetTestForPatch extends Query {
                     result.forEach(function(test){
                         resultSet.append(test);
                     });
-                })
+                });
             });
         })();
         callback(resultSet);
