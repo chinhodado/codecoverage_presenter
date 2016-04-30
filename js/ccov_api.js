@@ -24,6 +24,11 @@ class Query {
 
 /**
 *
+* --------------------------------------------------------------------------------
+* IMPORTANT: The method of obtaining the results will be changed and in the future
+*            will simply be functions rather than objects.
+* --------------------------------------------------------------------------------
+*
 * API to perform queries on Active Data JSON code coverage.
 *
 * Use setQuery() to give an object that inherits from Query that
@@ -61,20 +66,9 @@ class JsonCcov {
         this.queries = queriesToDo;
     }
 
-    storeResults (callback){
-        console.log("This next line is output once the query is finished. It has values in the object.")
-        console.log(this.result);
-        return callback;
-    }
-
-    _callBack (source){
-        console.log("Ended the query.");
-        return source;
-    }
-
     getQueryResults (callback) {
-        console.log(this.queryType);
         if (this.queries && !this.queryType) {
+            console.log("Use getQueriesResults insted.");
             return {};
         }
 
@@ -83,14 +77,14 @@ class JsonCcov {
         queryDone.performQuery(callback);
     }
 
-    getQueriesResults () {
+    getQueriesResults (callback) {
         if (!this.queries) {
             return {};
         }
         var results = [];
 
         this.queries.forEach(function (element, index) {
-            results.add(element.performQuery());
+            results.add(element.performQuery(callback));
         });
 
         return results;
@@ -106,7 +100,9 @@ class JsonCcov {
 */
 
 
-
+/**
+* This is the search function that is needed for the thread versions of the queries.
+*/
 var search = function* (query){
     var output = yield (Rest.post({
             url: "https://activedata.allizom.org/query",
@@ -115,6 +111,10 @@ var search = function* (query){
         yield (output);
 };
 
+
+/**
+* This is the search function that is needed for the callback versions of the queries.
+*/
 var search = function(query, callback){
     $.ajax("https://activedata.allizom.org/query", {
         type: "POST",
@@ -123,18 +123,6 @@ var search = function(query, callback){
     });
 };
 
-function* queryFilesOfTest(testParams){
-    var testToDo = testParams;
-    
-    var sourceFiles = yield (search({
-         "limit": 10000,
-         "where": {"eq": testToDo},
-         "groupby": ["source.file.name"],
-         "from": "coverage"
-     }));
- 
-     yield (sourceFiles);
-}
 
 /**
 * This query can be used to find all the source files that were accessed by
@@ -160,18 +148,23 @@ class QueryFilesOfTest extends Query {
     }
 }
 
-function* queryTestsOfSource(testParams){
+
+/**
+* Threaded version of the query for which source files are used by a given test.
+*/
+function* queryFilesOfTest(testParams){
     var testToDo = testParams;
     
     var sourceFiles = yield (search({
-              "limit": 10000,
-              "where": { "eq": testToDo},
-              "groupby": ["test.url"],
-              "from": "coverage"
+         "limit": 10000,
+         "where": {"eq": testToDo},
+         "groupby": ["source.file.name"],
+         "from": "coverage"
      }));
  
      yield (sourceFiles);
 }
+
 
 /**
 * This query can be used to find all the test files that access
@@ -197,62 +190,28 @@ class QueryTestsOfSource extends Query {
     }
 }
 
-function* queryCommonFiles(testParams){
-        var testToDo = this.testParams;
+
+/**
+* Threaded version of the query for the tests which use a particular source file.
+*/
+function* queryTestsOfSource(testParams){
+    var testToDo = testParams;
     
-        var coverage = yield (search({
-            "from":"coverage",
-            "where":{"prefix": testToDo},
-            "groupby":[
-                {"name":"test", "value":"test.url"},
-                {"name":"source", "value":"source.file.name"}
-            ],
-            "limit":10000,
-            "format":"list"
-        }));
-    
-        console.log(coverage);
-        //MAP EACH TEST TO THE SET OF FILES COVERED
-        var sources_by_test={};
-        coverage.data.forall(function(d, i){
-            sources_by_test[d.test] = coalesce(sources_by_test[d.test], {});
-            sources_by_test[d.test][d.source]=true;  // USE THE KEYS OF THE OBJECT AS SET
-        });
-        //FIND THE INTERSECTION OF COVERED FILES
-        var commonSources = null;
-        Map.forall(sources_by_test, function(test, sourceList){
-            if (commonSources==null) {
-                commonSources = Map.keys(sourceList);
-            }else{
-                commonSources = commonSources.intersect(Map.keys(sourceList));
-            }//endif
-        });
-    
-        var coverage = yield (search({
-            "from":"coverage",
-            "where":{"prefix": testToDo},
-            "edges":[
-                {"name":"source", "value":"source.file.name"},
-                {"name": "test", "value": "test.url", "allowNulls": false}
-            ],
-            "limit":10000,
-            "format":"cube"
-        }));
-        console.log(coverage);
-        //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
-        var all_sources = coverage.edges[0].domain.partitions.select("value");
-        //DATA IS IN {"count": [source][test]} PIVOT TABLE
-        var commonSources=[];
-        coverage.data.count.forall(function(tests, i){
-            //VERIFY THIS source TOUCHES ALL TESTS (count>0)
-            if (Array.AND(tests.map(function(v){return v>0;}))) {
-                commonSources.append(all_sources[i]);
-            }//endif
-        });
-    
-        yield(commonSources);
+    var sourceFiles = yield (search({
+              "limit": 10000,
+              "where": { "eq": testToDo},
+              "groupby": ["test.url"],
+              "from": "coverage"
+     }));
+ 
+     yield (sourceFiles);
 }
 
+
+/**
+* This query will take a test url and return the common files that it uses.
+* This is the version which uses callbacks.
+*/
 class QueryCommonFiles extends Query {
     constructor (testParams) {
         super(testParams);
@@ -323,6 +282,66 @@ class QueryCommonFiles extends Query {
         );
     }
 }
+
+
+/**
+* Threaded version of the query for common files. 
+*/
+function* queryCommonFiles(testParams){
+        var testToDo = this.testParams;
+    
+        var coverage = yield (search({
+            "from":"coverage",
+            "where":{"prefix": testToDo},
+            "groupby":[
+                {"name":"test", "value":"test.url"},
+                {"name":"source", "value":"source.file.name"}
+            ],
+            "limit":10000,
+            "format":"list"
+        }));
+    
+        //MAP EACH TEST TO THE SET OF FILES COVERED
+        var sources_by_test={};
+        coverage.data.forall(function(d, i){
+            sources_by_test[d.test] = coalesce(sources_by_test[d.test], {});
+            sources_by_test[d.test][d.source]=true;  // USE THE KEYS OF THE OBJECT AS SET
+        });
+        //FIND THE INTERSECTION OF COVERED FILES
+        var commonSources = null;
+        Map.forall(sources_by_test, function(test, sourceList){
+            if (commonSources==null) {
+                commonSources = Map.keys(sourceList);
+            }else{
+                commonSources = commonSources.intersect(Map.keys(sourceList));
+            }//endif
+        });
+    
+        var coverage = yield (search({
+            "from":"coverage",
+            "where":{"prefix": testToDo},
+            "edges":[
+                {"name":"source", "value":"source.file.name"},
+                {"name": "test", "value": "test.url", "allowNulls": false}
+            ],
+            "limit":10000,
+            "format":"cube"
+        }));
+    
+        //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
+        var all_sources = coverage.edges[0].domain.partitions.select("value");
+        //DATA IS IN {"count": [source][test]} PIVOT TABLE
+        var commonSources=[];
+        coverage.data.count.forall(function(tests, i){
+            //VERIFY THIS source TOUCHES ALL TESTS (count>0)
+            if (Array.AND(tests.map(function(v){return v>0;}))) {
+                commonSources.append(all_sources[i]);
+            }//endif
+        });
+    
+        yield(commonSources);
+}
+
 
 /**
 * This query can take a DXR link such as "https://dxr.mozilla.org/mozilla-central/source/browser/base/content/test/chat/browser_focus.js#13"
@@ -403,8 +422,10 @@ class QueryTestsForPatch extends Query {
     }
 }
 
+
 /**
-* Query for a set of patches. It depends upon QueryTestsForPatch. TODO: Testing.
+* Query for a set of patches. It depends upon QueryTestsForPatch. 
+* TODO: Testing, it may be incomplete and not functioning.
 */
 class QuerySetTestForPatch extends Query {
     constructor (testParams) {
@@ -421,10 +442,8 @@ class QuerySetTestForPatch extends Query {
                 var patch = new QueryTestsForPatch(testToDo);
                 ccov2.setQuery(patch);
 
-                var results = ccov2.performQuery(function(result){
-                    result.forEach(function(test){
-                        resultSet.append(test);
-                    });
+                var results = ccov2.getQueryResults(function(result){
+                        resultSet.append(result);
                 });
             });
         })();
@@ -432,9 +451,14 @@ class QuerySetTestForPatch extends Query {
     }
 }
 
+
 /**
 * Query for the relevancy of source files with respect to a given test file.
-**/
+* 
+* IMPORTANT/TODO: Currently, we only have the relevancy scores of files which have no
+*                 method names in them.
+*
+*/
 class QueryRelevancyOfSources extends Query {
     constructor(testparams){
         super(testparams);
@@ -462,6 +486,11 @@ class QueryRelevancyOfSources extends Query {
     }
 }
 
+
+/**
+* This can be used if there is a need for a query which isn't available in the API. It
+* accepts a query as a paramter during initialization and will perform that query exactly. 
+*/
 class QueryCustom extends Query {
     constructor(testparams){
         super(testparams);
