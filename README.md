@@ -6,6 +6,8 @@ This is a tool to explore code coverage data stored inside ActiveData
 ### Try it
 http://chinhodado.github.io/codecoverage_presenter/
 
+Make sure to use a modern browser that supports ES6 features.
+
 ### What is "relevancy"?
 See https://github.com/chinhodado/codecoverage_presenter/wiki
 
