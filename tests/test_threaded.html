@@ -36,32 +36,42 @@
     </div>
     
     <script type="application/javascript">
-        
-        var ccov = new JsonCcov();
         var test = "chrome://mochitests/content/browser/browser/base/content/test/chat/browser_focus.js";
         var sourceFile = "resource://gre/modules/XPCOMUtils.jsm";
         var buildRevision = "232db2940e992fe4c998dbb0a498703fbf463e0d";
         
-        var params = "http://hg.mozilla.org/mozilla-central/json-diff/0cc6001ba6f4/browser/base/content/browser-places.js";
+        importScript(
+         ["../modevlib/threads/thread.js", "../ccov_api_usingThread.js"],
+         function(){
+             Thread.run(function*(){
+                 var params2 = {
+                     "test.url":test
+                 };
+                 var results = yield (queryFilesOfTest(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+             
+             Thread.run(function*(){
+                 var params2 = {
+                     "source.file.name": sourceFile
+                 };
+                 var results = yield (queryTestsOfSource(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+             
+             Thread.run(function*(){
+                 var params2 = {
+                     "test.url":"chrome://mochitests/content/"
+                 };
+                 var results = yield (queryCommonFiles(params2));
+                 console.log("This line is after the query is performed. Next line in the console log should not be undefined but it is. ")
+                 console.log(results);
+             });
+         }
+        );
         
-        var paramsArray = ["http://hg.mozilla.org/mozilla-central/json-diff/0cc6001ba6f4/browser/base/content/browser-places.js",
-                           "http://hg.mozilla.org/mozilla-central/json-diff/0cc6001ba6f4/browser/base/content/browser-places.js"
-                           ];
-        
-        var patchQuery = new QueryTestsForPatch(params);
-        var patchQuerySet = new QuerySetTestForPatch(paramsArray);
-        
-        ccov.setQuery(patchQuery);
-        var results = ccov.getQueryResults(function(results) { 
-            console.log("Complete"); 
-            console.log(results);
-        });
-        
-        ccov.setQuery(patchQuerySet);
-        var results = ccov.getQueryResults(function(results) { 
-            console.log("Complete"); 
-            console.log(results);
-        });
         
 </script>
 </body>

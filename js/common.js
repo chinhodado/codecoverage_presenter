@@ -4,6 +4,9 @@ var usePermalinkFlag = false;
 function addTests(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var tests = yield (search({
             "limit": 10000,
             "groupby": ["test.url"],
@@ -31,15 +34,20 @@ function addTests(param) {
         if (param) {
             select2.val(param.select2);
         }
+
+        disableAll(false);
     });
 }
 
 function addSources(param) {
     var buildRevision = $("#selectBuildRevision").val();
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var sources = yield (search({
             "limit": 10000,
-            "groupby": ["source.file"],
+            "groupby": ["source.file.name"],
             "where" : {
                 "eq":{
                     "build.revision": buildRevision
@@ -66,6 +74,8 @@ function addSources(param) {
         if (param) {
             select2.val(param.select2);
         }
+
+        disableAll(false);
     });
 }
 
@@ -76,22 +86,49 @@ function addSources(param) {
  */
 function addBuild(buildRevision) {
     Thread.run(function*(){
+        // disable inputs while query is running
+        disableAll(true);
+
         var sources = yield (search({
             "limit": 10000,
-            "groupby": ["build.revision"],
+            "format": "list",
+            "groupby": ["build.revision", "build.created_timestamp"],
             "from": "coverage"
         }));
 
         sources.data.sort(function(a, b) {
-            return a[0].localeCompare(b[0]);
+            return b.build.created_timestamp - a.build.created_timestamp;
         });
+
         sources.data.forEach(function(element, index, array) {
-            $("#selectBuildRevision").append("<option value='" + element[0] + "'>" + element[0] + "</option>");
+            var date = new Date(element.build.created_timestamp * 1000);
+            $("#selectBuildRevision").append("<option value='" + element.build.revision + "'>" + element.build.revision.substring(0, 12) + " (" + date + ")</option>");
         });
 
         if (buildRevision) {
             $("#selectBuildRevision").val(buildRevision);
         }
+
+        disableAll(false);
+    });
+}
+
+function showBuildInfo(buildRevision) {
+    if (!buildRevision) return;
+
+    Thread.run(function*(){
+        var result = yield (search({
+            "limit":1,
+            "format":"list",
+            "select":["build.revision","build.created_timestamp","build.taskId"],
+            "from":"coverage",
+            "where":{"eq":{"build.revision":buildRevision}}
+        }));
+
+        var taskId = result.data[0].build.taskId;
+        var url = `https://tools.taskcluster.net/task-inspector/#${taskId}/`;
+        $("#buildInfo").html(`Build taskId: <a href="${url}">${taskId}</a>`);
+        $("#buildInfoDiv").show();
     });
 }
 
@@ -178,7 +215,7 @@ function processQuery(queryId, param, executeDirectly) {
         if (executeDirectly) {
             executeQuery3({
                 "eq":{
-                    "source.file": param.select2,
+                    "source.file.name": param.select2,
                     "build.revision": param.buildRevision
                 }
             });
@@ -187,10 +224,50 @@ function processQuery(queryId, param, executeDirectly) {
     else if (queryId == "4") {
         alert("Not implemented yet!");
     }
+    else if (queryId == "5") {
+        prepareQuery5(param);
+        if (executeDirectly) {
+            executeQuery5({
+                "eq":{
+                    "source.file.name": param.select2,
+                    "build.revision": param.buildRevision
+                }
+            });
+        }
+    }
 }
 
 function getDxrLink(fileName) {
     return "https://dxr.mozilla.org/mozilla-central/search?q=path%3A" + fileName + "&redirect=false&case=false";
+}
+
+/**
+ * Heuristically get a dxr link for a file
+ * @param fileName The file name to search on dxr
+ * @param callbackDone Will be called when a direct dxr link is obtained, with the link passed in as a parameter
+ * @param callbackNotUnique Will be called when there are more than one result when searching for fileName on dxr,
+ * the results will be passed in as a parameter
+ */
+function getSingleDxrLink(fileName, callbackDone, callbackNotUnique) {
+    // Trung: temporarily using my server since dxr doesn't support cross domain request
+    // TODO: add handle for error, for no result, etc.
+    var link = "http://bloodbrothers-chinhodado.rhcloud.com/getDxr/?file=" + fileName;
+    $.ajax({
+        url: link,
+        type: "GET",
+        crossDomain: true,
+        success: function(data){
+            data = JSON.parse(data);
+            var results = data.results;
+            if (results.length > 1) {
+                callbackNotUnique(results);
+            }
+
+            // in the event that there are multiple results for the file, just take the first one
+            var chosenLink = "https://dxr.mozilla.org/mozilla-central/source/" + results[0].path;
+            callbackDone(chosenLink);
+        }
+    });
 }
 
 function getShortenedFilePath(filePath) {
@@ -221,7 +298,7 @@ function isTest(filePath) {
 }
 
 function submitForm() {
-    $("#resultTableBody").html("");
+    $("#resultDiv").html("");
     var query = $("#querySelect").val();
     
     if (query == "1") {
@@ -232,5 +309,8 @@ function submitForm() {
     }
     else if (query == "3") {
         executeQuery3Manual();
+    }
+    else if (query == "5") {
+        executeQuery5Manual();
     }
 }

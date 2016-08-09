@@ -1,5 +1,5 @@
 /**
- * Given a test, which files does it touch?
+ * Given a test, which files does it touch and what is the relevancy?
  */
 function prepareQuery1(param) {
     addTests(param);
@@ -19,12 +19,24 @@ function executeQuery1Manual() {
     });
 }
 
-function executeQuery1(where) {
+function executeQuery1(filter) {
+    showBuildInfo(filter.eq["build.revision"]);
+    
     var query = {
+        "from": "coverage",
+        "where": {
+            "and": [
+                filter,
+                {"missing": "source.method.name"}
+            ]
+        },
         "limit": 10000,
-        "where": where,
-        "groupby": ["source.file"],
-        "from": "coverage"
+        "select": {
+            "name": "max_score",
+            "value": "source.file.score",
+            "aggregate": "maximum"
+        },
+        "groupby": ["source.file.name"]
     };
 
     Thread.run(function*(){
@@ -36,14 +48,21 @@ function executeQuery1(where) {
         sourceFiles.data.sort(function(a, b) {
             return a[0].localeCompare(b[0]);
         });
+
+        var table = "<table id='resultTable' class='table table-condensed tablesorter'><thead><tr><th>Source file</th><th>Relevancy</th></tr></thead><tbody>";
         sourceFiles.data.forEach(function(element, index, array) {
             if (!isTest(element[0])) {
                 var tokens = element[0].split("/");
                 var sourceName = tokens[tokens.length - 1];
                 var dxrLink = getDxrLink(sourceName);
-                $("#resultTableBody").append("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element[0] + "</a></td></tr>");
-            }            
+                var rowClass = element[1] >= 0.7? "style='font-weight:bold'" : "";
+                table += (`<tr ${rowClass}><td><a target='_blank' href='${dxrLink}'>${element[0]}</a></td><td>${element[1]}</td></tr>`);
+            }
         });
+        table += "</tbody></table>";
+        $("#resultDiv").html(table);
+
+        $("#resultTable").tablesorter({sortList: [[1,1]]});
 
         showPermalink();
         $("#resultDesc").text("Source files touched by selected test:");

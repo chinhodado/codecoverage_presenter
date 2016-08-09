@@ -5,11 +5,11 @@
     <title>ActiveData Code Coverage Query Tool</title>
     <script src="../lib/jquery.js"></script>
     <script src="../modevlib/imports/import.js"></script>
-    <script src="../common.js"></script>
-    <script src="../query1.js"></script>
-    <script src="../query2.js"></script>
-    <script src="../query3.js"></script>
-    <script src="../ccov_api.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/query/query1.js"></script>
+    <script src="../js/query/query2.js"></script>
+    <script src="../js/query/query3.js"></script>
+    <script src="../js/ccov_api.js"></script>
     <script src="../modevlib/main.js"></script>
     <link type="text/css" rel="stylesheet" href="../css/menu.css"/>
 </head>
@@ -26,7 +26,7 @@
             <br><br>
 
             <p id="resultDesc"></p>
-            <div id="resultTable">
+            <div id="resultDiv">
                 <table>
                     <tbody id="resultTableBody">
                     </tbody>
@@ -43,8 +43,9 @@
         var buildRevision = "232db2940e992fe4c998dbb0a498703fbf463e0d";
         
         var params = "https://dxr.mozilla.org/mozilla-central/source/browser/base/content/test/chat/browser_focus.js#13"
+        var params2 = "https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/BrowserUtils.jsm";
         
-        var dxrQuery = new QueryDXRFile(params);
+        var dxrQuery = new QueryDXRFile(params2);
         
         ccov.setQuery(dxrQuery);
         var results = ccov.getQueryResults(function(results) { 
