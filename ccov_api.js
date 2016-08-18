@@ -131,7 +131,7 @@ class QueryFilesOfTest extends Query {
               "limit": 10000,
               "where": testToDo,
               "groupby": ["source.file.name"],
-              "from": "coverage"
+              "from": "coverage-summary"
           },
           callback
         );
@@ -155,7 +155,7 @@ class QueryTestsOfSource extends Query {
               "limit": 10000,
               "where": testToDo,
               "groupby": ["test.url"],
-              "from": "coverage"
+              "from": "coverage-summary"
           },
           callback
         );
@@ -175,7 +175,7 @@ class QueryCommonFiles extends Query {
         var commonSources = null;
 
         search({
-            "from":"coverage",
+            "from":"coverage-summary",
             "where": { prefix: testToDo },
             "groupby":[
                 {"name":"test", "value":"test.url"},
@@ -207,7 +207,7 @@ class QueryCommonFiles extends Query {
         var coverage;
         search(
             {
-            "from":"coverage",
+            "from":"coverage-summary",
             "where": { prefix: testToDo },
             "edges":[
                 {"name":"source", "value":"source.file"},
@@ -317,7 +317,7 @@ class QueryRelevancyOfSources extends Query {
                   {
                       "limit": 10000,
                       "groupby": ["test.url"],
-                      "from": "coverage",
+                      "from": "coverage-summary",
                       "limit":10000
                   },
                   function(totalTests){

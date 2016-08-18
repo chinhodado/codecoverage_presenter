@@ -2,7 +2,7 @@
  * Given a test, which unique files does it touch?
  */
 function prepareQuery2(param) {
-    addTests(param);    
+    addTests(param);
 }
 
 function executeQuery2Manual() {
@@ -21,14 +21,14 @@ function executeQuery2Manual() {
 
 function executeQuery2(filter) {
     showBuildInfo(filter.eq["build.revision"]);
-    
+
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
 
         // get source files covered by test
         var sources = yield (search({
-            "from": "coverage",
+            "from": "coverage-summary",
             "where": filter,
             "groupby": [
                 {"name": "source", "value": "source.file.name"}
@@ -40,7 +40,7 @@ function executeQuery2(filter) {
         // for each file, find number of other tests
         var siblings = yield (search({
             // find test that cover the same
-            "from": "coverage",
+            "from": "coverage-summary",
             "select": {"name": "tests", "value": "test.url", "aggregate": "union"},
             "where": {
                 "in": {
@@ -66,14 +66,14 @@ function executeQuery2(filter) {
         $("#resultDesc").text("Unique source files touched by selected test:");
 
         var table = "<table class='table table-condensed'><tbody>";
-        siblings.data.forEach(function(element, index, array) {            
+        siblings.data.forEach(function(element, index, array) {
             if (element.tests.length > 0) return;
             if (!isTest(element.source)) {
                 var tokens = element.source.split("/");
                 var sourceName = tokens[tokens.length - 1];
                 var dxrLink = getDxrLink(sourceName);
                 table += ("<tr><td><a target='_blank' href='" + dxrLink + "'>" + element.source + "</a></td></tr>");
-            }            
+            }
         });
         table += "</tbody></table>";
         $("#resultDiv").html(table);

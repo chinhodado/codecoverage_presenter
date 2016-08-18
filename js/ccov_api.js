@@ -15,8 +15,8 @@ class Query {
     constructor (testParams) {
         this.testParameters = testParams
     }
-    
-    performQuery (){ 
+
+    performQuery (){
         var x = {};
         return x;
     }
@@ -132,7 +132,7 @@ class QueryFilesOfTest extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters;
 
@@ -141,7 +141,7 @@ class QueryFilesOfTest extends Query {
               "limit": 10000,
               "where": testToDo,
               "groupby": ["source.file.name"],
-              "from": "coverage"
+              "from": "coverage-summary"
           },
           callback
         );
@@ -154,14 +154,14 @@ class QueryFilesOfTest extends Query {
 */
 function* queryFilesOfTest(testParams){
     var testToDo = testParams;
-    
+
     var sourceFiles = yield (search({
          "limit": 10000,
          "where": {"eq": testToDo},
          "groupby": ["source.file.name"],
-         "from": "coverage"
+         "from": "coverage-summary"
      }));
- 
+
      yield (sourceFiles);
 }
 
@@ -174,7 +174,7 @@ class QueryTestsOfSource extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
 
@@ -183,7 +183,7 @@ class QueryTestsOfSource extends Query {
               "limit": 10000,
               "where": testToDo,
               "groupby": ["test.url"],
-              "from": "coverage"
+              "from": "coverage-summary"
           },
           callback
         );
@@ -196,14 +196,14 @@ class QueryTestsOfSource extends Query {
 */
 function* queryTestsOfSource(testParams){
     var testToDo = testParams;
-    
+
     var sourceFiles = yield (search({
               "limit": 10000,
               "where": { "eq": testToDo},
               "groupby": ["test.url"],
-              "from": "coverage"
+              "from": "coverage-summary"
      }));
- 
+
      yield (sourceFiles);
 }
 
@@ -216,16 +216,16 @@ class QueryCommonFiles extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters;
-        
-        var coverage = null; 
+
+        var coverage = null;
         var sources_by_test={};
         var commonSources = null;
-    
+
         search({
-            "from":"coverage",
+            "from":"coverage-summary",
             "where": { prefix: testToDo },
             "groupby":[
                 {"name":"test", "value":"test.url"},
@@ -248,16 +248,16 @@ class QueryCommonFiles extends Query {
                     }else{
                         commonSources = commonSources.intersect(Map.keys(sourceList));
                     }//endif
-                }); 
-              } 
+                });
+              }
             );
-        
-        
-        
+
+
+
         var coverage;
         search(
             {
-            "from":"coverage",
+            "from":"coverage-summary",
             "where": { prefix: testToDo },
             "edges":[
                 {"name":"source", "value":"source.file.name"},
@@ -266,7 +266,7 @@ class QueryCommonFiles extends Query {
             "limit":10000,
             "format":"cube"
             },
-            function(coverage) { 
+            function(coverage) {
                 //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
                 var all_sources = coverage.edges[0].domain.partitions.select("value");
                 //DATA IS IN {"count": [source][test]} PIVOT TABLE
@@ -285,13 +285,13 @@ class QueryCommonFiles extends Query {
 
 
 /**
-* Threaded version of the query for common files. 
+* Threaded version of the query for common files.
 */
 function* queryCommonFiles(testParams){
         var testToDo = this.testParams;
-    
+
         var coverage = yield (search({
-            "from":"coverage",
+            "from":"coverage-summary",
             "where":{"prefix": testToDo},
             "groupby":[
                 {"name":"test", "value":"test.url"},
@@ -300,7 +300,7 @@ function* queryCommonFiles(testParams){
             "limit":10000,
             "format":"list"
         }));
-    
+
         //MAP EACH TEST TO THE SET OF FILES COVERED
         var sources_by_test={};
         coverage.data.forall(function(d, i){
@@ -316,9 +316,9 @@ function* queryCommonFiles(testParams){
                 commonSources = commonSources.intersect(Map.keys(sourceList));
             }//endif
         });
-    
+
         var coverage = yield (search({
-            "from":"coverage",
+            "from":"coverage-summary",
             "where":{"prefix": testToDo},
             "edges":[
                 {"name":"source", "value":"source.file.name"},
@@ -327,7 +327,7 @@ function* queryCommonFiles(testParams){
             "limit":10000,
             "format":"cube"
         }));
-    
+
         //edges[0] DESCRIBES THE source DIMENSION, WE SELECT ALL PARTS OF THE DOMAIN
         var all_sources = coverage.edges[0].domain.partitions.select("value");
         //DATA IS IN {"count": [source][test]} PIVOT TABLE
@@ -338,7 +338,7 @@ function* queryCommonFiles(testParams){
                 commonSources.append(all_sources[i]);
             }//endif
         });
-    
+
         yield(commonSources);
 }
 
@@ -355,24 +355,24 @@ class QueryDXRFile extends Query{
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
-        
+
         var tempArray = testToDo.split("/");
-        
+
         var fileTemp = tempArray[tempArray.length-1];
         var fileArr = fileTemp.split("#");
-            
+
         search(
             {
                 "from": "coverage.source.file.covered",
                 "limit": 10000,
                 "where": {
-                     "contains": { "source.file.name": fileArr[0] } 
+                     "contains": { "source.file.name": fileArr[0] }
                 },
                 "groupby": ["test.url", "source.file.name", "line"]
-               
+
             },
             callback
         );
@@ -400,18 +400,18 @@ class QueryTestsForPatch extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testToDo = this.testParameters;
-        
+
         $.getJSON(testToDo, function(jsonData){
             var temp = jsonData['path'];
             var temp2 = temp.split('/');
             var tests = null;
-            
+
             search(
                 {
-                    "from":"coverage",
+                    "from":"coverage-summary",
                     "where":{"contains":{"source.file.name":temp2[temp2.length-1]}},
                     "limit":10000,
                     "groupby":["test.url","source.file.name"]
@@ -424,19 +424,19 @@ class QueryTestsForPatch extends Query {
 
 
 /**
-* Query for a set of patches. It depends upon QueryTestsForPatch. 
+* Query for a set of patches. It depends upon QueryTestsForPatch.
 * TODO: Testing, it may be incomplete and not functioning.
 */
 class QuerySetTestForPatch extends Query {
     constructor (testParams) {
         super(testParams);
     }
-    
+
     performQuery(callback){
         var testSet = this.testParameters;
         var ccov2 = new JsonCcov();
         var resultSet = [];
-        
+
         (function(){
             testSet.forEach(function(testToDo){
                 var patch = new QueryTestsForPatch(testToDo);
@@ -454,7 +454,7 @@ class QuerySetTestForPatch extends Query {
 
 /**
 * Query for the relevancy of source files with respect to a given test file.
-* 
+*
 * IMPORTANT/TODO: Currently, we only have the relevancy scores of files which have no
 *                 method names in them.
 *
@@ -463,12 +463,12 @@ class QueryRelevancyOfSources extends Query {
     constructor(testparams){
         super(testparams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters;
         search(
-            {  
-                "from":"coverage",
+            {
+                "from":"coverage-summary",
                 "where":{"and":[
                     {"eq":testToDo},
                     {"missing":"source.method.name"}
@@ -489,16 +489,16 @@ class QueryRelevancyOfSources extends Query {
 
 /**
 * This can be used if there is a need for a query which isn't available in the API. It
-* accepts a query as a paramter during initialization and will perform that query exactly. 
+* accepts a query as a paramter during initialization and will perform that query exactly.
 */
 class QueryCustom extends Query {
     constructor(testparams){
         super(testparams);
     }
-    
+
     performQuery (callback) {
         var testToDo = this.testParameters
-        
+
         search(testToDo, callback);
     }
 }

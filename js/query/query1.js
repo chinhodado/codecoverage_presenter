@@ -21,9 +21,9 @@ function executeQuery1Manual() {
 
 function executeQuery1(filter) {
     showBuildInfo(filter.eq["build.revision"]);
-    
+
     var query = {
-        "from": "coverage",
+        "from": "coverage-summary",
         "where": {
             "and": [
                 filter,

@@ -34,9 +34,9 @@
             </div>
         </div>
     </div>
-    
+
     <script type="application/javascript">
-        
+
         var ccov = new JsonCcov();
         var test = "chrome://mochitests/content/browser/addon-sdk/test/browser_sdk_loader_chrome.js";
         var sourceFile = "resource://gre/modules/XPCOMUtils.jsm";
@@ -47,48 +47,48 @@
                // "build.revision": buildRevision
             }
         };
-        
+
         var params2 = {
                 "test.url":"chrome://mochitests/content/"
         };
-        
+
         var params3 = {
               "limit": 10000,
               "where": params,
               "groupby": ["source.file.name"],
-              "from": "coverage"
+              "from": "coverage-summary"
         };
-        
+
         var params4 = {
             "eq":{
                 "source.file.name": sourceFile
                // "build.revision": buildRevision
             }
         };
-        
+
         var query = new QueryFilesOfTest(params);
         var query2 = new QueryCommonFiles(params2);
         var query3 = new QueryCustom(params3);
         var query4 = new QueryTestsOfSource(params4);
-        
+
         ccov.setQuery(query);
-        var results = ccov.getQueryResults(function(results) { 
-            console.log("Complete"); 
+        var results = ccov.getQueryResults(function(results) {
+            console.log("Complete");
             console.log(results);
         });
-        
+
         ccov.setQuery(query2);
         var results = ccov.getQueryResults(function(results) {
             console.log("Complete.");
-            console.log(results); 
+            console.log(results);
         });
-        
+
         ccov.setQuery(query3);
         var results = ccov.getQueryResults(function(results) {
             console.log("Complete.");
             console.log(results);
         });
-        
+
         ccov.setQuery(query4);
         var results = ccov.getQueryResults(function(results) {
             console.log("Complete.");

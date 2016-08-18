@@ -15,7 +15,7 @@ function addTests(param) {
                     "build.revision": buildRevision
                 }
             },
-            "from": "coverage"
+            "from": "coverage-summary"
         }));
 
         $("#selectLabel2").text("Select a test:");
@@ -53,7 +53,7 @@ function addSources(param) {
                     "build.revision": buildRevision
                 }
             },
-            "from": "coverage"
+            "from": "coverage-summary"
         }));
 
         $("#selectLabel2").text("Select a source file:");
@@ -92,8 +92,10 @@ function addBuild(buildRevision) {
         var sources = yield (search({
             "limit": 10000,
             "format": "list",
-            "groupby": ["build.revision", "build.created_timestamp"],
-            "from": "coverage"
+            "select":[{"value":"build.created_timestamp", "aggregate":"max"}],
+            "groupby": ["build.revision"],
+            "where":{"missing":"source.method.name"},
+            "from": "coverage-summary"
         }));
 
         sources.data.sort(function(a, b) {
@@ -121,13 +123,13 @@ function showBuildInfo(buildRevision) {
             "limit":1,
             "format":"list",
             "select":["build.revision","build.created_timestamp","build.taskId"],
-            "from":"coverage",
+            "from":"coverage-summary",
             "where":{"eq":{"build.revision":buildRevision}}
         }));
 
         var taskId = result.data[0].build.taskId;
-        var url = `https://tools.taskcluster.net/task-inspector/#${taskId}/`;
-        $("#buildInfo").html(`Build taskId: <a href="${url}">${taskId}</a>`);
+        var url = "https://tools.taskcluster.net/task-inspector/#${taskId}/";
+        $("#buildInfo").html('Build taskId: <a href="${url}">${taskId}</a>');
         $("#buildInfoDiv").show();
     });
 }
@@ -300,7 +302,7 @@ function isTest(filePath) {
 function submitForm() {
     $("#resultDiv").html("");
     var query = $("#querySelect").val();
-    
+
     if (query == "1") {
         executeQuery1Manual();
     }

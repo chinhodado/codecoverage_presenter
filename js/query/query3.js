@@ -2,7 +2,7 @@
  * Given a source file, which tests touch it?
  */
 function prepareQuery3(param) {
-    addSources(param);    
+    addSources(param);
 }
 
 function executeQuery3Manual() {
@@ -21,7 +21,7 @@ function executeQuery3Manual() {
 
 function executeQuery3(filter) {
     showBuildInfo(filter.eq["build.revision"]);
-    
+
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
@@ -30,7 +30,7 @@ function executeQuery3(filter) {
             "limit": 10000,
             "where": filter,
             "groupby": ["test.url"],
-            "from": "coverage"
+            "from": "coverage-summary"
         }));
 
         testFiles.data.sort(function(a, b) {
