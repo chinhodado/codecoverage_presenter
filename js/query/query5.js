@@ -21,7 +21,7 @@ function executeQuery5Manual() {
 
 function executeQuery5(filter) {
     showBuildInfo(filter.eq["build.revision"]);
-    
+
     Thread.run(function*(){
         // disable inputs while query is running
         disableAll(true);
@@ -36,7 +36,7 @@ function executeQuery5(filter) {
                 "source.file.total_uncovered",
                 "source.file.percentage_covered"
             ],
-            "from": "coverage",
+            "from": "coverage-summary",
             "where": {
                 "and":[
                     {"missing": "source.method.name"},
@@ -102,7 +102,7 @@ function executeQuery5(filter) {
             $("#resultDiv").prepend(p);
         },
         function(results) {
-            var warn = `<p>WARNING: there are multiple result when searching for ${source} on dxr. 
+            var warn = `<p>WARNING: there are multiple result when searching for ${source} on dxr.
                         Using the first result, but it may not be accurate!</p>`;
             $("#resultDiv").prepend(warn);
         });

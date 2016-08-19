@@ -34,25 +34,25 @@
             </div>
         </div>
     </div>
-    
+
     <script type="application/javascript">
-        
+
         var ccov = new JsonCcov();
         var test = "chrome://mochitests/content/browser/browser/base/content/test/chat/browser_focus.js";
         var sourceFile = "resource://gre/modules/XPCOMUtils.jsm";
         var buildRevision = "232db2940e992fe4c998dbb0a498703fbf463e0d";
-        
+
         var params2 = {
                 "test.url":"chrome://mochitests/content/browser/browser/components/places/tests/browser/"
         };
-        
+
         var params3 = {
               "limit": 10000,
               "where": params,
               "groupby": ["source.file.name"],
-              "from": "coverage"
+              "from": "coverage-summary"
         };
-        
+
         var params4 = {
             "eq":{
                 "source.file": sourceFile,
@@ -72,21 +72,21 @@
                 ]},
                 "groupby":["test.url"]
         };
-        
+
         var params = {
                 "test.url": test,
                 "build.revision": buildRevision
         };
-        
+
         var query5 = new QueryCustom(params5);
         var relevanceQuery = new QueryRelevancyOfSources(params);
-        
+
         ccov.setQuery(relevanceQuery);
-        var results = ccov.getQueryResults(function(results) { 
-            console.log("Complete"); 
+        var results = ccov.getQueryResults(function(results) {
+            console.log("Complete");
             console.log(results);
         });
-        
+
 </script>
 </body>
 </html>
